@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 using DebugAssert = System.Diagnostics.Debug;
 
@@ -8,25 +7,28 @@ using DebugAssert = System.Diagnostics.Debug;
 /// </summary>
 public class InteractiveNode : MonoBehaviour
 {
-    public static event Action<int, Vector3> NodeSelected;
-    public static int NodesCounter = 0;
-    
     [SerializeField] protected GameObject sideMenu;
-    [SerializeField] protected Dictionary<string, GameObject> connectors;
     
+    public static event Action<int, Vector3> NodeSelected;
+    public static event Action<Vector3> NodeDragged;
+    
+    private static int NodesCounter;
     private int _nodeId;
-    private bool _selected;
     private Vector3 _mouseRelativePos;
+    private NodeConnectors _nodeConnectors;
 
     /// <summary>
     /// Method <c>Start</c> sets the node counter, finds relevant components and disables hidden elements.
     /// </summary>
     public void Start()
     {
-        _selected = false;
         NodesCounter += 1;
         _nodeId = NodesCounter;
+        _nodeConnectors = GetComponent<NodeConnectors>();
+        _nodeConnectors.SetNodeId(_nodeId);
         sideMenu.GetComponent<NodeSideMenu>().SetPositioning(transform.position);
+        sideMenu.GetComponent<NodeSideMenu>().SetNodeId(_nodeId);
+        _nodeConnectors.SetupConnectors(transform.position);
         sideMenu.SetActive(false);
     }
 
@@ -54,8 +56,8 @@ public class InteractiveNode : MonoBehaviour
     private void OnMouseDown()
     {
         _mouseRelativePos = gameObject.transform.position - GetMouseCoords();
-        _selected = true;
         sideMenu.SetActive(false);
+        NodeSelected?.Invoke(_nodeId, transform.position);
     }
 
     /// <summary>
@@ -74,6 +76,10 @@ public class InteractiveNode : MonoBehaviour
     private void OnMouseDrag()
     {
         transform.position = GetMouseCoords() + _mouseRelativePos;
+        if (_nodeConnectors.isConnecting)
+        {
+            NodeDragged?.Invoke(transform.position);
+        }
     }
 
     /// <summary>
@@ -85,6 +91,8 @@ public class InteractiveNode : MonoBehaviour
         NodeSelected?.Invoke(_nodeId, transform.position);
     }
 
+    
+    
     /// <summary>
     /// Method <c>NewNodeSelected</c> marks all other nodes as not selected.
     /// <param name="id_selected">The id of the selected node.</param>
@@ -94,8 +102,8 @@ public class InteractiveNode : MonoBehaviour
     {
         if (_nodeId != id_selected)
         {
-            _selected = false;
             sideMenu.SetActive(false);
+            _nodeConnectors.DisableConnectors();
         }
     }
 }
