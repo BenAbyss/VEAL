@@ -10,7 +10,7 @@ public class InteractiveNode : MonoBehaviour
     [SerializeField] protected GameObject sideMenu;
     
     public static event Action<int, Vector3> NodeSelected;
-    public static event Action<Vector3> NodeDragged;
+    public static event Action<int, Vector3, bool> NodeDragged;
     
     private static int NodesCounter;
     private int _nodeId;
@@ -76,10 +76,7 @@ public class InteractiveNode : MonoBehaviour
     private void OnMouseDrag()
     {
         transform.position = GetMouseCoords() + _mouseRelativePos;
-        if (_nodeConnectors.isConnecting)
-        {
-            NodeDragged?.Invoke(transform.position);
-        }
+        NodeDragged?.Invoke(_nodeId, transform.position, _nodeConnectors.isConnecting);
     }
 
     /// <summary>
@@ -98,7 +95,7 @@ public class InteractiveNode : MonoBehaviour
     /// <param name="id_selected">The id of the selected node.</param>
     /// <param name="new_pos">The new position of the selected node.</param>
     /// </summary>
-    private void NewNodeSelected(int id_selected, Vector3 new_pos)
+    private void NewNodeSelected(int id_selected, Vector3 new_pos=default)
     {
         if (_nodeId != id_selected)
         {

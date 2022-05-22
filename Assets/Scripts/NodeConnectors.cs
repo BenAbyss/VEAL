@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Linq;
+using UnityEngine;
 
 public class NodeConnectors : MonoBehaviour
 {
@@ -6,7 +8,7 @@ public class NodeConnectors : MonoBehaviour
     [SerializeField] protected GameObject connectedNode;
 
     public bool isConnecting;
-    private int _nodeId;
+    public int nodeId;
 
     
 
@@ -16,6 +18,8 @@ public class NodeConnectors : MonoBehaviour
     private void OnEnable()
     {
         NodeSideMenu.Connecting += BeginConnecting;
+        NodeConnector.MakingConnection += EnableConnectors;
+        NodeConnector.ConnectionRecipientMade += DisableConnectors;
     }
 
     /// <summary>
@@ -24,15 +28,28 @@ public class NodeConnectors : MonoBehaviour
     private void OnDisable()
     {
         NodeSideMenu.Connecting -= BeginConnecting;
+        NodeConnector.MakingConnection -= EnableConnectors;
+        NodeConnector.ConnectionRecipientMade -= DisableConnectors;
     }
-    
+
+    /// <summary>
+    /// Method <c>Start</c> passes this object down to all individual connectors.
+    /// </summary>
+    public void Start()
+    {
+        foreach (var connector in connectors)
+        {
+            connectors.GetNodeFunction(connector.Key).SetConnectorGroup(this);
+        }
+    }
+
     /// <summary>
     /// Method <c>SetNodeId</c> sets the ID of the connectors' relevant node.
     /// <param name="node_id">The ID of the relevant node.</param>
     /// </summary>
     public void SetNodeId(int node_id)
     {
-        _nodeId = node_id;
+        nodeId = node_id;
     }
     
     
@@ -41,12 +58,12 @@ public class NodeConnectors : MonoBehaviour
     /// Method <c>BeginConnecting</c> sets the appropriate node up to begin connecting.
     /// <param name="node_id">The ID of the node to begin connecting.</param>
     /// </summary>
-    public void BeginConnecting(int node_id)
+    private void BeginConnecting(int node_id)
     {
-        if (node_id == _nodeId)
+        if (node_id == nodeId)
         {
-            isConnecting = true;
-            EnableConnectors();
+            isConnecting = !isConnecting;
+            ToggleConnectors();
         }
     }
     
@@ -63,16 +80,32 @@ public class NodeConnectors : MonoBehaviour
         }
         DisableConnectors();
     }
-
+    
+    
+    
     /// <summary>
     /// Method <c>EnableConnectors</c> enables all connectors of a node.
     /// </summary>
-    public void EnableConnectors()
+    private void EnableConnectors()
     {
-        foreach (var connector in connectors)
+        foreach (var function in 
+            connectors.Select(connector => connectors.GetNodeFunction(connector.Key)))
         {
-            connector.Value.SetActive(!connector.Value.activeSelf);
-            connectors.GetNodeFunction(connector.Key).Move(connectedNode.transform.position);
+            function.ChangeVisibility(true);
+            function.Move(connectedNode.transform.position);
+        }
+    }
+    
+    /// <summary>
+    /// Method <c>ToggleConnectors</c> toggles all connectors of a node.
+    /// </summary>
+    private void ToggleConnectors()
+    {
+        foreach (var function in 
+            connectors.Select(connector => connectors.GetNodeFunction(connector.Key)))
+        {
+            function.ChangeVisibility(!function.isVisible);
+            function.Move(connectedNode.transform.position);
         }
     }
     
@@ -81,9 +114,24 @@ public class NodeConnectors : MonoBehaviour
     /// </summary>
     public void DisableConnectors()
     {
-        foreach (var connector in connectors.Values)
+        foreach (var function in 
+            connectors.Select(connector => connectors.GetNodeFunction(connector.Key)))
         {
-            connector.SetActive(false);
+            function.ChangeVisibility(false);
+            isConnecting = false;
+        }
+    }
+
+    /// <summary>
+    /// Method <c>DisableConnectors</c> disables all connectors of a node.
+    /// <param name="recipient">The recipient node of the connection.</param>
+    /// </summary>
+    private void DisableConnectors(NodeConnector recipient)
+    {
+        foreach (var function in 
+            connectors.Select(connector => connectors.GetNodeFunction(connector.Key)))
+        {
+            function.ChangeVisibility(false);
             isConnecting = false;
         }
     }
