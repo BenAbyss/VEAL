@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 using DebugAssert = System.Diagnostics.Debug;
@@ -81,6 +82,47 @@ public class NodeConnector  : NodeConnectedObject
     }
 
     /// <summary>
+    /// Method <c>GetConnectionFromID</c> returns the id of the node with a connection to this connector.
+    /// <returns>The connector nodes' ID, or -1 if it doesn't exist.</returns>
+    /// </summary>
+    public int GetConnectionFromID()
+    {
+        if (_connectionFrom == null)
+        {
+            return -1;
+        }
+        else
+        {
+            return _connectionFrom.GetNodesId();
+        }
+    }
+    
+    /// <summary>
+    /// Method <c>GetConnectionFromID</c> returns the id of the node this connector connects to.
+    /// <returns>The connectee nodes' ID, or -1 if it doesn't exist.</returns>
+    /// </summary>
+    public int GetConnectionToID()
+    {
+        if (_connectionTo == null)
+        {
+            return -1;
+        }
+        else
+        {
+            return _connectionTo.GetNodesId();
+        }
+    }
+
+    /// <summary>
+    /// Method <c>GetNodesId</c> returns the id of this connectors' node.
+    /// <returns>This connectors' node.</returns>
+    /// </summary>
+    private int GetNodesId()
+    {
+        return _connectorGroup.nodeId;
+    }
+    
+    /// <summary>
     /// Method <c>SetupLineRenderer</c> sets up the Line Renderer with the appropriate settings.
     /// </summary>
     private void SetupLineRenderer()
@@ -105,6 +147,14 @@ public class NodeConnector  : NodeConnectedObject
         isVisible = is_visible;
     }
 
+    /// <summary>
+    /// Method <c>ApplyConnectedSprite</c> changes the sprite used to a green one.
+    /// </summary>
+    private void ApplyConnectedSprite()
+    {
+        _renderer.sprite = Resources.Load<Sprite>("Sprites/NodeConnectors/ConnectedNodeConnector");
+    }
+    
     /// <summary>
     /// Method <c>Clicked</c> makes other nodes' connectors visible, providing the node isn't connected already.
     /// </summary>
@@ -193,12 +243,14 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private void FormConnectionRecipient(NodeConnector recipient)
     {
-        if (_connectingNode)
+        if (_connectingNode && !_connectorGroup.CheckForConnectedNode(recipient.GetNodesId()))
         {
             _connectionTo = recipient;
             _connectionTo.SetConnectionFrom(this);
             _connectingNode = false;
             DrawConnection();
+            ApplyConnectedSprite();
+            _connectionTo.ApplyConnectedSprite();
         }
     }
 }

@@ -76,7 +76,7 @@ MonoBehaviour:
   m_MinSize: {x: 577, y: 421}
   m_MaxSize: {x: 12002, y: 8021}
   vertical: 1
-  controlID: 110
+  controlID: 98
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -102,7 +102,7 @@ MonoBehaviour:
   m_MinSize: {x: 577, y: 221}
   m_MaxSize: {x: 12002, y: 4021}
   vertical: 0
-  controlID: 105
+  controlID: 99
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -242,8 +242,8 @@ MonoBehaviour:
     y: 0
     width: 1073
     height: 678
-  m_MinSize: {x: 202, y: 221}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 19}
   m_Panes:
   - {fileID: 19}
@@ -554,20 +554,20 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Resources/Materials
+    - Assets/Resources/Sprites/NodeConnectors
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Resources/Materials
+  - Assets/Resources/Sprites/NodeConnectors
   m_LastFoldersGridSize: -1
   m_LastProjectPath: G:\Dissertation 2021-22\VEAL
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 587d0000
-    m_LastClickedID: 32088
-    m_ExpandedIDs: 00000000d23a0000dc3a0000d675000000ca9a3b
+    m_SelectedIDs: 003b0000
+    m_LastClickedID: 15104
+    m_ExpandedIDs: 00000000d23a0000d43a0000e03a0000e83a000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -595,7 +595,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000d23a0000
+    m_ExpandedIDs: 00000000d23a0000d43a0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -620,8 +620,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 38390000
-    m_LastClickedInstanceID: 14648
+    m_SelectedInstanceIDs: ec3a0000
+    m_LastClickedInstanceID: 15084
     m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c6230000f45600000e3e0000063e0000de7dffff3692feffc03e000000000000
     m_RenameOverlay:
@@ -717,10 +717,10 @@ MonoBehaviour:
   m_ViewDataDictionary: {fileID: 0}
   m_SceneHierarchy:
     m_TreeViewState:
-      scrollPos: {x: 0, y: 209}
-      m_SelectedIDs: 38fbffff
-      m_LastClickedID: -1224
-      m_ExpandedIDs: b6faffffbefaffff58fbffff60fbffff62fbffff26390000
+      scrollPos: {x: 0, y: 0}
+      m_SelectedIDs: ec3a0000
+      m_LastClickedID: 0
+      m_ExpandedIDs: 62fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -780,9 +780,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -0.22624168, y: -0.010966249, z: -793.59}
+    m_Target: {x: 0.0067032278, y: -0.2711707, z: -793.65283}
     speed: 2
-    m_Value: {x: -0.22624168, y: -0.010966249, z: -793.59}
+    m_Value: {x: 0.0067032278, y: -0.2711707, z: -793.65283}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -832,9 +832,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 6.0889297
+    m_Target: 5.30336
     speed: 2
-    m_Value: 6.0889297
+    m_Value: 5.30336
   m_Ortho:
     m_Target: 1
     speed: 2

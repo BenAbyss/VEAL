@@ -80,6 +80,27 @@ public class NodeConnectors : MonoBehaviour
         }
         DisableConnectors();
     }
+
+    /// <summary>
+    /// Method <c>CheckForConnectedNode</c> checks whether a node already has a connection to or from this node.
+    /// <param name="node_id">The ID of the node to check for connections for.</param>
+    /// <returns>A boolean stating if there's a connection.</returns>
+    /// </summary>
+    public bool CheckForConnectedNode(int node_id)
+    {
+        foreach (var connector in connectors)
+        {
+            var function = connectors.GetNodeFunction(connector.Key);
+            if (function.GetConnectionFromID() == node_id || function.GetConnectionToID() == node_id)
+            {
+                return true;
+            }
+        }
+
+        return false;
+        
+        
+    }
     
     
     
