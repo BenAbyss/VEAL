@@ -51,6 +51,15 @@ public class NodeConnectors : MonoBehaviour
     {
         nodeId = node_id;
     }
+
+    /// <summary>
+    /// Method <c>GetNodeDepth</c> returns the depth of the relevant node.
+    /// <returns>The nodes' Z coordinate depth.</returns>
+    /// </summary>
+    public float GetNodeDepth()
+    {
+        return connectedNode.transform.position.z;
+    }
     
     
     

@@ -1,18 +1,20 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using DebugAssert = System.Diagnostics.Debug;
 
 /// <summary>
 /// Class <c>InteractiveNode</c> provides functionality of a movable interactive node.
 /// </summary>
-public class InteractiveNode : MonoBehaviour
+public class InteractiveNode : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 {
     [SerializeField] protected GameObject sideMenu;
     
     public static event Action<int, Vector3> NodeSelected;
     public static event Action<int, Vector3, bool> NodeDragged;
     
-    private static int NodesCounter;
+    private static int _NodesCounter;
     private int _nodeId;
     private Vector3 _mouseRelativePos;
     private NodeConnectors _nodeConnectors;
@@ -22,8 +24,8 @@ public class InteractiveNode : MonoBehaviour
     /// </summary>
     public void Start()
     {
-        NodesCounter += 1;
-        _nodeId = NodesCounter;
+        _NodesCounter += 1;
+        _nodeId = _NodesCounter;
         _nodeConnectors = GetComponent<NodeConnectors>();
         _nodeConnectors.SetNodeId(_nodeId);
         sideMenu.GetComponent<NodeSideMenu>().SetPositioning(transform.position);
@@ -51,9 +53,9 @@ public class InteractiveNode : MonoBehaviour
     
     
     /// <summary>
-    /// Method <c>OnMouseDown</c> calculates the mouse's relative clicking position.
+    /// Method <c>OnPointerDown</c> calculates the mouse's relative clicking position.
     /// </summary>
-    private void OnMouseDown()
+    public void OnBeginDrag(PointerEventData event_data)
     {
         _mouseRelativePos = gameObject.transform.position - GetMouseCoords();
         sideMenu.SetActive(false);
@@ -61,33 +63,39 @@ public class InteractiveNode : MonoBehaviour
     }
 
     /// <summary>
-    /// Method <c>GetMouseCoords</c> gets the world coordinates of the mouse position.
+    /// Method <c>OnDrag</c> moves the node with the mouse as it's dragged.
     /// </summary>
-    /// <returns>The world coordinates of the mouse position</returns>
-    private Vector3 GetMouseCoords()
-    {
-        DebugAssert.Assert(Camera.main != null, "Camera.main != null");
-        return Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    }
-    
-    /// <summary>
-    /// Method <c>OnMouseDrag</c> moves the node with the mouse as it's dragged.
-    /// </summary>
-    private void OnMouseDrag()
+    public void OnDrag(PointerEventData event_data)
     {
         transform.position = GetMouseCoords() + _mouseRelativePos;
         NodeDragged?.Invoke(_nodeId, transform.position, _nodeConnectors.isConnecting);
     }
 
     /// <summary>
-    /// Method <c>OnMouseUp</c> marks the node as selected and reveals the side menu as the node is placed.
+    /// Method <c>OnPointerUp</c> marks the node as selected and reveals the side menu as the node is placed.
     /// </summary>
-    private void OnMouseUp()
+    public void OnEndDrag(PointerEventData event_data)
     {
         sideMenu.SetActive(true);
         NodeSelected?.Invoke(_nodeId, transform.position);
     }
 
+    public void OnPointerDown(PointerEventData event_data)
+    {
+        sideMenu.SetActive(true);
+        NodeSelected?.Invoke(_nodeId, transform.position);
+    }
+    
+    /// <summary>
+    /// Method <c>GetMouseCoords</c> gets the world coordinates of the mouse position.
+    /// </summary>
+    /// <returns>The world coordinates of the mouse position</returns>
+    private Vector3 GetMouseCoords()
+    {
+        DebugAssert.Assert(Camera.main != null, "Camera.main != null");
+        return Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
+    }
+    
     
     
     /// <summary>

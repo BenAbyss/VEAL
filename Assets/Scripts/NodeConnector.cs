@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using DebugAssert = System.Diagnostics.Debug;
 
@@ -9,11 +10,13 @@ using DebugAssert = System.Diagnostics.Debug;
 /// </summary>
 public class NodeConnector  : NodeConnectedObject
 {
+    [SerializeField] private float[] arrowThickness; // [start_width, end_width, length_percent]
     public static event Action MakingConnection;
     public static event Action<NodeConnector> ConnectionRecipientMade;
 
     public bool isVisible;
     private LineRenderer _lineRenderer;
+    private LineRenderer _arrowTipRenderer;
     private NodeConnector _connectionTo;
     private NodeConnector _connectionFrom;
     private NodeConnectors _connectorGroup;
@@ -91,10 +94,8 @@ public class NodeConnector  : NodeConnectedObject
         {
             return -1;
         }
-        else
-        {
-            return _connectionFrom.GetNodesId();
-        }
+
+        return _connectionFrom.GetNodesId();
     }
     
     /// <summary>
@@ -132,6 +133,14 @@ public class NodeConnector  : NodeConnectedObject
         _lineRenderer.startWidth = 0.2f;
         _lineRenderer.endWidth = 0.2f;
         _lineRenderer.material = Resources.Load<Material>("Materials/Arrow-Material");
+
+        var arrow_obj = new GameObject();
+        arrow_obj.transform.parent = transform;
+        arrow_obj.AddComponent(typeof(LineRenderer));
+        _arrowTipRenderer = arrow_obj.GetComponent<LineRenderer>();
+        _arrowTipRenderer.startWidth = arrowThickness[0];
+        _arrowTipRenderer.endWidth = arrowThickness[1];
+        _arrowTipRenderer.material = Resources.Load<Material>("Materials/Arrow-Material");
     }
     
 
@@ -156,6 +165,14 @@ public class NodeConnector  : NodeConnectedObject
     }
     
     /// <summary>
+    /// Method <c>ApplyDisconnectedSprite</c> changes the sprite used to a red one.
+    /// </summary>
+    private void ApplyDisconnectedSprite()
+    {
+        _renderer.sprite = Resources.Load<Sprite>("Sprites/NodeConnectors/DisconnectedNodeConnector");
+    }
+    
+    /// <summary>
     /// Method <c>Clicked</c> makes other nodes' connectors visible, providing the node isn't connected already.
     /// </summary>
     public void Clicked()
@@ -164,6 +181,13 @@ public class NodeConnector  : NodeConnectedObject
         {
             SetupLineRenderer();
         }
+
+        if (_connectionTo != null)
+        {
+            _connectionTo.ApplyDisconnectedSprite();
+            ApplyDisconnectedSprite();
+            _connectionTo = null;
+        }
         
         MakingConnection?.Invoke();
         if (_connectorGroup.isConnecting)
@@ -171,11 +195,6 @@ public class NodeConnector  : NodeConnectedObject
             if (_connectionTo == null)
             {
                 _connectingNode = true;
-            }
-
-            else
-            {
-                // React to node already being connected
             }
         }
         else
@@ -192,7 +211,7 @@ public class NodeConnector  : NodeConnectedObject
     /// z-axis with constant thickness.
     private Vector3 GetCoordinates()
     {
-        var ray = _camera.ScreenPointToRay(Input.mousePosition);
+        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
         var plane = new Plane(Vector3.forward, new Vector3(0, 0, -2));
         plane.Raycast(ray, out var distance);
         return ray.GetPoint(distance);
@@ -225,16 +244,14 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private void DrawConnection(Vector3 coords=default)
     {
-        if (coords != default)
-        {
-            _lineRenderer.SetPositions(new[]
-                {transform.position, coords});
-        }
-        else
-        {
-            _lineRenderer.SetPositions(new[]
-                {transform.position, _connectionTo.transform.position});   
-        }
+        var start = transform.position - new Vector3(0.05f, 0.05f, 0);
+        start.z = _connectorGroup.GetNodeDepth() + 0.1f;
+        var end = coords != default ? coords : _connectionTo.transform.position;
+        end.z = _connectorGroup.GetNodeDepth() + 0.1f;
+        
+        var arrow_length = (Vector3.Distance(start, end) < 1.75f) ? 0.5f : (100 - arrowThickness[2]) / 100;
+        _lineRenderer.SetPositions(new[]{start, Vector3.Lerp(start, end, arrow_length)});
+        _arrowTipRenderer.SetPositions(new[]{Vector3.Lerp(start, end, arrow_length), end});
     }
 
     /// <summary>
@@ -247,10 +264,15 @@ public class NodeConnector  : NodeConnectedObject
         {
             _connectionTo = recipient;
             _connectionTo.SetConnectionFrom(this);
-            _connectingNode = false;
             DrawConnection();
             ApplyConnectedSprite();
             _connectionTo.ApplyConnectedSprite();
         }
+        else if (_connectingNode)
+        {
+            _lineRenderer.positionCount = 0;
+            _arrowTipRenderer.positionCount = 0;
+        }
+        _connectingNode = false;
     }
 }

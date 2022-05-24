@@ -241,7 +241,7 @@ PrefabInstance:
     - target: {fileID: 3858489380810980631, guid: da44ee45c19495f4390dc1651b5890a9,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.02355957
+      value: 0.0234375
       objectReference: {fileID: 0}
     - target: {fileID: 8356017407444508402, guid: da44ee45c19495f4390dc1651b5890a9,
         type: 3}
@@ -501,16 +501,35 @@ MonoBehaviour:
   m_GameObject: {fileID: 888840736}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
+  m_Script: {fileID: 11500000, guid: 01614664b831546d2ae94a42149d80ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
+  m_MoveRepeatDelay: 0.5
+  m_MoveRepeatRate: 0.1
+  m_ActionsAsset: {fileID: -944628639613478452, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_PointAction: {fileID: -6257570264103243131, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_MoveAction: {fileID: 2454857984435538699, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_SubmitAction: {fileID: 8246078909828998856, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_CancelAction: {fileID: -2621183733918298585, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_LeftClickAction: {fileID: 6702393370903307670, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_MiddleClickAction: {fileID: -8990662984341361262, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_RightClickAction: {fileID: 891865489189503789, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_ScrollWheelAction: {fileID: -1528058840914942111, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_TrackedDevicePositionAction: {fileID: -2760526623856250720, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_TrackedDeviceOrientationAction: {fileID: 1798228464741231370, guid: 0162f8e917433f341982824b5167728b,
+    type: 3}
+  m_DeselectOnBackgroundClick: 1
+  m_PointerBehavior: 0
 --- !u!114 &888840738
 MonoBehaviour:
   m_ObjectHideFlags: 0
