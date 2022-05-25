@@ -58,12 +58,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\InteractiveNode.cs" />
-     <Compile Include="Assets\Scripts\NodeConnectedObject.cs" />
-     <Compile Include="Assets\Scripts\NodeConnector.cs" />
-     <Compile Include="Assets\Scripts\NodeConnectors.cs" />
-     <Compile Include="Assets\Scripts\NodeSideMenu.cs" />
-     <Compile Include="Assets\Scripts\SerializeNodeConnectorsDict.cs" />
+     <Compile Include="Assets\Scripts\InputManager.cs" />
+     <Compile Include="Assets\Scripts\Nodes\BasicNode.cs" />
+     <Compile Include="Assets\Scripts\Nodes\Connectors\NodeConnectedObject.cs" />
+     <Compile Include="Assets\Scripts\Nodes\Connectors\NodeConnector.cs" />
+     <Compile Include="Assets\Scripts\Nodes\Connectors\NodeConnectors.cs" />
+     <Compile Include="Assets\Scripts\Nodes\Connectors\SerializeNodeConnectorsDict.cs" />
+     <Compile Include="Assets\Scripts\Nodes\InteractiveNode.cs" />
+     <Compile Include="Assets\Scripts\Nodes\Midpoint.cs" />
+     <Compile Include="Assets\Scripts\Nodes\NodeManager.cs" />
+     <Compile Include="Assets\Scripts\Nodes\NodeSideMenu.cs" />
  <Reference Include="Unity.Timeline.Editor">
  <HintPath>G:/Dissertation 2021-22/VEAL/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
  </Reference>
