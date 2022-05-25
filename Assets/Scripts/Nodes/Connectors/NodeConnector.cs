@@ -254,6 +254,8 @@ public class NodeConnector  : NodeConnectedObject
         end.z = _connectorGroup.GetNodeDepth() + 0.1f;
         
         var arrow_length = (Vector3.Distance(start, end) < 1.75f) ? 0.5f : (100 - arrowThickness[2]) / 100;
+        
+        _lineRenderer.numCapVertices = 5;
         _lineRenderer.SetPositions(new[]{start, Vector3.Lerp(start, end, arrow_length)});
         _arrowTipRenderer.SetPositions(new[]{Vector3.Lerp(start, end, arrow_length), end});
     }
