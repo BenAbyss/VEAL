@@ -10,6 +10,7 @@ using DebugAssert = System.Diagnostics.Debug;
 public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 {
     [SerializeField] protected GameObject sideMenu;
+    protected override string NodeType => "Interactive Node";
 
     /// <summary>
     /// Method <c>Start</c> sets the node counter, finds relevant components and disables hidden elements.
@@ -62,6 +63,9 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
         base.OnEndDrag(event_data);
     }
 
+    /// <summary>
+    /// Method <c>OnPointerDown</c> marks the node as selected and reveals the side menu.
+    /// </summary>
     public new void OnPointerDown(PointerEventData event_data)
     {
         sideMenu.SetActive(true);

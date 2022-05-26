@@ -15,11 +15,11 @@ public class NodeConnector  : NodeConnectedObject
 
     public static bool ConnectionsOccurring;
     public bool isVisible;
+    public NodeConnectors connectorGroup;
     private LineRenderer _lineRenderer;
     private LineRenderer _arrowTipRenderer;
     private NodeConnector _connectionTo;
     private NodeConnector _connectionFrom;
-    private NodeConnectors _connectorGroup;
     private SpriteRenderer _renderer;
     private Button _button;
     private bool _connectingNode;
@@ -69,15 +69,6 @@ public class NodeConnector  : NodeConnectedObject
     
     
     /// <summary>
-    /// Method <c>SetConnectorGroup</c> sets the group object of the node.
-    /// <param name="connector_group">The node group object.</param>
-    /// </summary>
-    public void SetConnectorGroup(NodeConnectors connector_group)
-    {
-        _connectorGroup = connector_group;
-    }
-
-    /// <summary>
     /// Method <c>SetConnectionFrom</c> sets the connector that leads to this node.
     /// <param name="connector">The connector that leads to this node.</param>
     /// </summary>
@@ -110,10 +101,44 @@ public class NodeConnector  : NodeConnectedObject
         {
             return -1;
         }
-        else
-        {
-            return _connectionTo.GetNodesId();
-        }
+
+        return _connectionTo.GetNodesId();
+    }
+    
+    /// <summary>
+    /// Method <c>GetConnectionTo</c> returns node connector this connector connects to.
+    /// <returns>The connector object.</returns>
+    /// </summary>
+    public NodeConnector GetConnectionTo()
+    {
+        return _connectionTo;
+    }
+    
+    /// <summary>
+    /// Method <c>GetConnectionFrom</c> returns node connector that connects to this.
+    /// <returns>The connector object.</returns>
+    /// </summary>
+    public NodeConnector GetConnectionFrom()
+    {
+        return _connectionFrom;
+    }
+    
+    /// <summary>
+    /// Method <c>HasOutput</c> states if the node has an outgoing connection.
+    /// <returns>A boolean stating whether it has a connection.</returns>
+    /// </summary>
+    public bool HasOutput()
+    {
+        return _connectionTo != null;
+    }
+    
+    /// <summary>
+    /// Method <c>HasInput</c> states if the node has an incoming connection.
+    /// <returns>A boolean stating whether it has a connection.</returns>
+    /// </summary>
+    public bool HasInput()
+    {
+        return _connectionFrom != null;
     }
 
     /// <summary>
@@ -122,7 +147,7 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private int GetNodesId()
     {
-        return _connectorGroup.nodeId;
+        return connectorGroup.nodeId;
     }
     
     /// <summary>
@@ -192,7 +217,7 @@ public class NodeConnector  : NodeConnectedObject
         }
         
         MakingConnection?.Invoke();
-        if (_connectorGroup.isConnecting)
+        if (connectorGroup.isConnecting)
         {
             ConnectionsOccurring = true;
             if (_connectionTo == null)
@@ -229,7 +254,7 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private void MoveWithNode(int node_id, Vector3 dist, bool is_connecting=false)
     {
-        if (node_id == _connectorGroup.nodeId)
+        if (node_id == connectorGroup.nodeId)
         {
             Move(node_id, dist);
             if (_connectionTo != null)
@@ -249,13 +274,15 @@ public class NodeConnector  : NodeConnectedObject
     private void DrawConnection(Vector3 coords=default)
     {
         var start = transform.position - new Vector3(0.05f, 0.05f, 0);
-        start.z = _connectorGroup.GetNodeDepth() + 0.1f;
+        start.z = connectorGroup.GetNodeDepth() + 0.1f;
         var end = coords != default ? coords : _connectionTo.transform.position;
-        end.z = _connectorGroup.GetNodeDepth() + 0.1f;
+        end.z = connectorGroup.GetNodeDepth() + 0.1f;
         
         var arrow_length = (Vector3.Distance(start, end) < 1.75f) ? 0.5f : (100 - arrowThickness[2]) / 100;
-        
+        _lineRenderer.positionCount = 2;
+        _arrowTipRenderer.positionCount = 2;
         _lineRenderer.numCapVertices = 5;
+        
         _lineRenderer.SetPositions(new[]{start, Vector3.Lerp(start, end, arrow_length)});
         _arrowTipRenderer.SetPositions(new[]{Vector3.Lerp(start, end, arrow_length), end});
     }
@@ -266,7 +293,8 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private void FormConnectionRecipient(NodeConnector recipient)
     {
-        if (_connectingNode && !_connectorGroup.CheckForConnectedNode(recipient.GetNodesId()))
+        if (_connectingNode && !connectorGroup.CheckForConnectedNode(recipient.GetNodesId()) && 
+            !NodeManager.MidpointPathHitsNode(recipient.GetNodesId(), this))
         {
             _connectionTo = recipient;
             _connectionTo.SetConnectionFrom(this);

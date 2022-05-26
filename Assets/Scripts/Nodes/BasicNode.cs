@@ -9,6 +9,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     public static event Action<int, Vector3, bool> NodeDragged;
     
     protected static int NodesCounter;
+    protected virtual string NodeType => "Basic Node";
     public int nodeId;
     private Vector3 _mouseRelativePos;
     protected NodeConnectors NodeConnectors;
@@ -23,6 +24,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         NodeConnectors = GetComponent<NodeConnectors>();
         NodeConnectors.SetNodeId(nodeId);
         NodeConnectors.SetupConnectors(transform.position);
+        NodeConnectors.SetNodeType(NodeType);
     }
 
     /// <summary>
@@ -62,13 +64,16 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     }
 
     /// <summary>
-    /// Method <c>OnPointerUp</c> marks the node as selected and reveals the side menu as the node is placed.
+    /// Method <c>OnEndDrag</c> marks the node as selected as the drag is released.
     /// </summary>
     public void OnEndDrag(PointerEventData event_data)
     {
         NodeSelected?.Invoke(nodeId, transform.position);
     }
 
+    /// <summary>
+    /// Method <c>OnPointerDown</c> marks the node as selected on a left click.
+    /// </summary>
     public void OnPointerDown(PointerEventData event_data)
     {
         if (event_data.button == 0)

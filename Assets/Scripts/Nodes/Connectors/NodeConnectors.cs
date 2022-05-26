@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class NodeConnectors : MonoBehaviour
 
     public bool isConnecting;
     public int nodeId;
+    public string nodeType;
 
     
 
@@ -39,7 +41,7 @@ public class NodeConnectors : MonoBehaviour
     {
         foreach (var connector in connectors)
         {
-            connectors.GetNodeFunction(connector.Key).SetConnectorGroup(this);
+            connectors.GetNodeFunction(connector.Key).connectorGroup = this;
         }
     }
 
@@ -59,6 +61,15 @@ public class NodeConnectors : MonoBehaviour
     public float GetNodeDepth()
     {
         return connectedNode.transform.position.z;
+    }
+    
+    /// <summary>
+    /// Method <c>SetNodeType</c> sets the class type of the node.
+    /// <param name="node_type">The type of the relevant node.</param>
+    /// </summary>
+    public void SetNodeType(string node_type)
+    {
+        nodeType = node_type;
     }
     
     
@@ -105,10 +116,25 @@ public class NodeConnectors : MonoBehaviour
                 return true;
             }
         }
-
         return false;
-        
-        
+    }
+    
+    /// <summary>
+    /// Method <c>GetUsedConnectors</c> gets all connectors that are outputting and/or inputting a connection.
+    /// <returns>Connectors with a connection.</returns>
+    /// </summary>
+    public List<NodeConnector> GetUsedConnectors(bool outputs = true, bool inputs = true)
+    {
+        List<NodeConnector> conns = new List<NodeConnector>();
+        foreach (var connector in connectors)
+        {
+            var function = connectors.GetNodeFunction(connector.Key);
+            if (outputs && function.HasOutput() || inputs && function.HasInput())
+            {
+                conns.Add(function);
+            }
+        }
+        return conns;
     }
     
     
