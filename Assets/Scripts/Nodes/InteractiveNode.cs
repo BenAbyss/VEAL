@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 using DebugAssert = System.Diagnostics.Debug;
 
 /// <summary>
@@ -10,6 +12,7 @@ using DebugAssert = System.Diagnostics.Debug;
 public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 {
     [SerializeField] protected GameObject sideMenu;
+    [SerializeField] public GameObject nameField;
     protected override string NodeType => "Interactive Node";
 
     /// <summary>
@@ -21,8 +24,13 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
         nodeId = NodesCounter;
         NodeConnectors = GetComponent<NodeConnectors>();
         NodeConnectors.SetNodeId(nodeId);
-        sideMenu.GetComponent<NodeSideMenu>().SetPositioning(transform.position);
-        sideMenu.GetComponent<NodeSideMenu>().SetNodeId(nodeId);
+
+        var side_menu_func = sideMenu.GetComponent<NodeSideMenu>();
+        side_menu_func.SetPositioning(transform.position);
+        side_menu_func.SetNodeId(nodeId);
+        var name_textbox = nameField.GetComponent<NodeTextbox>();
+        name_textbox.SetNodeId(nodeId);
+        name_textbox.Move(transform.position);
         NodeConnectors.SetupConnectors(transform.position);
         sideMenu.SetActive(false);
     }
@@ -78,8 +86,9 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
     /// Method <c>NewNodeSelected</c> marks all other nodes as not selected.
     /// <param name="id_selected">The id of the selected node.</param>
     /// <param name="new_pos">The new position of the selected node.</param>
+    /// <param name="game_obj">The selected node game object.</param>
     /// </summary>
-    private void NewNodeSelected(int id_selected, Vector3 new_pos=default)
+    private void NewNodeSelected(int id_selected, Vector3 new_pos=default, GameObject game_obj=default)
     {
         if (nodeId != id_selected)
         {

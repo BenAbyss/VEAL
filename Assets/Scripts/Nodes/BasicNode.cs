@@ -5,7 +5,7 @@ using DebugAssert = System.Diagnostics.Debug;
 
 public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerDownHandler
 {
-    public static event Action<int, Vector3> NodeSelected;
+    public static event Action<int, Vector3, GameObject> NodeSelected;
     public static event Action<int, Vector3, bool> NodeDragged;
     
     protected static int NodesCounter;
@@ -42,6 +42,15 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     {
         NodeSelected -= NewNodeSelected;
     }
+
+    /// <summary>
+    /// Method <c>GetNodeConnectors</c> gets the connectors group for the node.
+    /// <returns>The node connector group.</returns>
+    /// </summary>
+    public NodeConnectors GetNodeConnectors()
+    {
+        return NodeConnectors;
+    }
     
     
     
@@ -51,7 +60,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     public void OnBeginDrag(PointerEventData event_data)
     {
         _mouseRelativePos = gameObject.transform.position - InputManager.GetMouseCoords();
-        NodeSelected?.Invoke(nodeId, transform.position);
+        NodeSelected?.Invoke(nodeId, transform.position, gameObject);
     }
 
     /// <summary>
@@ -68,7 +77,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     /// </summary>
     public void OnEndDrag(PointerEventData event_data)
     {
-        NodeSelected?.Invoke(nodeId, transform.position);
+        NodeSelected?.Invoke(nodeId, transform.position, gameObject);
     }
 
     /// <summary>
@@ -78,8 +87,13 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     {
         if (event_data.button == 0)
         {
-            NodeSelected?.Invoke(nodeId, transform.position);
+            NodeSelected?.Invoke(nodeId, transform.position, gameObject);
         }
+    }
+
+    public void Rename(string name)
+    {
+        Debug.Log(name);
     }
 
 
@@ -88,8 +102,9 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     /// Method <c>NewNodeSelected</c> marks all other nodes as not selected.
     /// <param name="id_selected">The id of the selected node.</param>
     /// <param name="new_pos">The new position of the selected node.</param>
+    /// <param name="game_obj">The selected node game object.</param>
     /// </summary>
-    private void NewNodeSelected(int id_selected, Vector3 new_pos=default)
+    private void NewNodeSelected(int id_selected, Vector3 new_pos=default, GameObject game_obj=default)
     {
         if (nodeId != id_selected)
         {

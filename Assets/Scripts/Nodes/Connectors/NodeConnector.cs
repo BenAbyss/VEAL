@@ -10,6 +10,7 @@ using DebugAssert = System.Diagnostics.Debug;
 public class NodeConnector  : NodeConnectedObject
 {
     [SerializeField] private float[] arrowThickness; // [start_width, end_width, length_percent]
+    [SerializeField] private float lineThickness;
     public static event Action MakingConnection;
     public static event Action<NodeConnector> ConnectionRecipientMade;
 
@@ -49,7 +50,7 @@ public class NodeConnector  : NodeConnectedObject
     /// <summary>
     /// Method <c>OnEnable</c> sets reactionary method calls to invoked events.
     /// </summary>
-    private void OnEnable()
+    private new void OnEnable()
     {
         BasicNode.NodeDragged += MoveWithNode;
         ConnectionRecipientMade += FormConnectionRecipient;
@@ -59,13 +60,13 @@ public class NodeConnector  : NodeConnectedObject
     /// <summary>
     /// Method <c>OnDisable</c> disables reactionary method calls to invoked events.
     /// </summary>
-    private void OnDisable()
+    private new void OnDisable()
     {
         BasicNode.NodeDragged -= MoveWithNode;
         ConnectionRecipientMade -= FormConnectionRecipient;
         NodeManager.MidpointCreated -= FormMidpointConnection;
     }
-
+    
     
     
     /// <summary>
@@ -75,6 +76,55 @@ public class NodeConnector  : NodeConnectedObject
     private void SetConnectionFrom(NodeConnector connector)
     {
         _connectionFrom = connector;
+    }
+    
+    /// <summary>
+    /// Method <c>SetConnectionTo</c> sets the connector that this node leads to.
+    /// <param name="connector">The connector that this node leads to.</param>
+    /// </summary>
+    private void SetConnectionTo(NodeConnector connector)
+    {
+        _connectionTo = connector;
+    }
+    
+    /// <summary>
+    /// Method <c>ClearConnections</c> clears any connections from the connector.
+    /// </summary>
+    public void ClearConnections()
+    {
+        if (_connectionFrom != null)
+        {
+            _connectionFrom.SetConnectionTo(null);
+            _connectionFrom.RemoveDrawings();
+            _connectionFrom.ApplyDisconnectedSprite();
+            _connectionFrom = null;
+        }
+        
+        if (_connectionTo != null)
+        {
+            _connectionTo.SetConnectionFrom(null);
+            _connectionTo.ApplyDisconnectedSprite();
+            _connectionTo = null;
+            RemoveDrawings();
+        }
+    }
+
+    /// <summary>
+    /// Method <c>SetConnectingNode</c> sets the connecting node boolean.
+    /// <param name="connecting_node">The new boolean value.</param>
+    /// </summary>
+    public void SetConnectingNode(bool connecting_node)
+    {
+        _connectingNode = connecting_node;
+    }
+    
+    /// <summary>
+    /// Method <c>GetConnectingNode</c> gets the connecting node boolean.
+    /// <returns>Whether the node is currently connecting.</returns>
+    /// </summary>
+    public bool GetConnectingNode()
+    {
+        return _connectingNode;
     }
 
     /// <summary>
@@ -157,8 +207,8 @@ public class NodeConnector  : NodeConnectedObject
     {
         gameObject.AddComponent(typeof(LineRenderer));
         _lineRenderer = GetComponent<LineRenderer>();
-        _lineRenderer.startWidth = 0.2f;
-        _lineRenderer.endWidth = 0.2f;
+        _lineRenderer.startWidth = lineThickness;
+        _lineRenderer.endWidth = lineThickness;
         _lineRenderer.material = Resources.Load<Material>("Materials/Arrow-Material");
 
         var arrow_obj = new GameObject();
@@ -183,6 +233,18 @@ public class NodeConnector  : NodeConnectedObject
         isVisible = is_visible;
     }
 
+    /// <summary>
+    /// Method <c>RemoveDrawings</c> removes drawn lines from the connector.
+    /// </summary>
+    public void RemoveDrawings()
+    {
+        if (_lineRenderer != null)
+        {
+            _lineRenderer.positionCount = 0;
+            _arrowTipRenderer.positionCount = 0;
+        }
+    }
+    
     /// <summary>
     /// Method <c>ApplyConnectedSprite</c> changes the sprite used to a green one.
     /// </summary>
@@ -233,6 +295,8 @@ public class NodeConnector  : NodeConnectedObject
 
     }
     
+    
+    
     /// <summary>
     /// Method <c>GetCoordinates</c> gets the coordinates of the mouse, for line mapping.
     /// </summary>
@@ -273,12 +337,14 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private void DrawConnection(Vector3 coords=default)
     {
-        var start = transform.position - new Vector3(0.05f, 0.05f, 0);
+        var start = transform.position - new Vector3(arrowThickness[1], arrowThickness[1], 0);
         start.z = connectorGroup.GetNodeDepth() + 0.1f;
         var end = coords != default ? coords : _connectionTo.transform.position;
         end.z = connectorGroup.GetNodeDepth() + 0.1f;
         
-        var arrow_length = (Vector3.Distance(start, end) < 1.75f) ? 0.5f : (100 - arrowThickness[2]) / 100;
+        // if the distance is less than 6 connectors, have half the line as the arrow tip
+        var arrow_length = (Vector3.Distance(start, end) < _renderer.size.x*6) 
+            ? 0.5f : (100 - arrowThickness[2]) / 100;
         _lineRenderer.positionCount = 2;
         _arrowTipRenderer.positionCount = 2;
         _lineRenderer.numCapVertices = 5;
@@ -304,8 +370,7 @@ public class NodeConnector  : NodeConnectedObject
         }
         else if (_connectingNode)
         {
-            _lineRenderer.positionCount = 0;
-            _arrowTipRenderer.positionCount = 0;
+            RemoveDrawings();
         }
         _connectingNode = false;
     }

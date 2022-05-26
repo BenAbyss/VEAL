@@ -8,7 +8,51 @@ public class NodeManager : MonoBehaviour
 {
     public static event Action<Midpoint> MidpointCreated;
     [SerializeField] private GameObject midpointPrefab;
+    private GameObject _selectedNode;
+
+    /// <summary>
+    /// Method <c>OnEnable</c> sets reactionary method calls to invoked events.
+    /// </summary>
+    protected void OnEnable()
+    {
+        BasicNode.NodeSelected += SetSelectedNode;
+    }
+
+    /// <summary>
+    /// Method <c>OnDisable</c> disables reactionary method calls to invoked events.
+    /// </summary>
+    protected void OnDisable()
+    {
+        BasicNode.NodeSelected -= SetSelectedNode;
+    }
     
+    /// <summary>
+    /// Method <c>SetSelectedNode</c> destroys the currently selected node.
+    /// <returns>The selected node game object</returns>
+    /// </summary>
+    public void DestroySelectedNode()
+    {
+        if (_selectedNode == null) return;
+        
+        var node_func = _selectedNode.GetComponent<BasicNode>();
+        foreach (var conn in node_func.GetNodeConnectors().GetUsedConnectors())
+        {
+            conn.ClearConnections();
+        }
+        Destroy(_selectedNode);
+    }
+    
+    /// <summary>
+    /// Method <c>SetSelectedNode</c> sets the current selected node.
+    /// <param name="node">The selected node game object.</param>
+    /// </summary>
+    private void SetSelectedNode(int id_selected, Vector3 new_pos, GameObject node)
+    {
+        _selectedNode = node;
+    }
+
+
+
     // ReSharper disable Unity.PerformanceAnalysis
     /// <summary>
     /// Method <c>CreateMidpoint</c> instantiates a midpoint. 
@@ -36,7 +80,7 @@ public class NodeManager : MonoBehaviour
     /// </summary>
     public static bool MidpointPathHitsNode(int node_id, NodeConnector start_conn)
     {
-        List<int> nodes_hit = new List<int>();
+        var nodes_hit = new List<int>();
         foreach (var conn in start_conn.connectorGroup.GetUsedConnectors(true, false))
         {
             nodes_hit = nodes_hit.Concat(FollowMidpointPath(conn)).ToList();
@@ -45,13 +89,10 @@ public class NodeManager : MonoBehaviour
         foreach (var origin_group_conn in start_conn.connectorGroup.GetUsedConnectors(false))
         {
             var origin = FindMidpointPathOrigin(origin_group_conn);
-            Debug.Log(origin);
-            if (origin != null)
+            if (origin == null) continue;
+            foreach (var conn in origin.GetUsedConnectors(true, false))
             {
-                foreach (var conn in origin.GetUsedConnectors(true, false))
-                {
-                    nodes_hit = nodes_hit.Concat(FollowMidpointPath(conn)).ToList();
-                }
+                nodes_hit = nodes_hit.Concat(FollowMidpointPath(conn)).ToList();
             }
         }
 
@@ -65,14 +106,16 @@ public class NodeManager : MonoBehaviour
     /// </summary>
     private static NodeConnectors FindMidpointPathOrigin(NodeConnector conn)
     {
-        var node_conn = conn.GetConnectionFrom();
-        Debug.Log(node_conn);
-        if (node_conn == null) return null;
-        var midpt = node_conn.connectorGroup;
-        return midpt.nodeType != "Midpoint" ? midpt : FindMidpointPathOrigin(node_conn);
-
+        while (true)
+        {
+            var node_conn = conn.GetConnectionFrom();
+            if (node_conn == null) return null;
+            var midpt = node_conn.connectorGroup;
+            if (midpt.nodeType != "Midpoint") return midpt;
+            conn = node_conn;
+        }
     }
-    
+
     /// <summary>
     /// Method <c>FollowMidpointPath</c> follows the midpoint path onwards, noting all nodes hit from possible paths.
     /// <param name="conn">A connector of the midpoint to traverse from.</param>

@@ -22,6 +22,7 @@ public class NodeConnectors : MonoBehaviour
         NodeSideMenu.Connecting += BeginConnecting;
         NodeConnector.MakingConnection += EnableConnectors;
         NodeConnector.ConnectionRecipientMade += DisableConnectors;
+        InputManager.CancelAction += DisableConnectors;
     }
 
     /// <summary>
@@ -32,6 +33,7 @@ public class NodeConnectors : MonoBehaviour
         NodeSideMenu.Connecting -= BeginConnecting;
         NodeConnector.MakingConnection -= EnableConnectors;
         NodeConnector.ConnectionRecipientMade -= DisableConnectors;
+        InputManager.CancelAction -= DisableConnectors;
     }
 
     /// <summary>
@@ -174,6 +176,11 @@ public class NodeConnectors : MonoBehaviour
             connectors.Select(connector => connectors.GetNodeFunction(connector.Key)))
         {
             function.ChangeVisibility(false);
+            if (function.GetConnectingNode())
+            {
+                function.SetConnectingNode(false);
+                function.RemoveDrawings();
+            }
             isConnecting = false;
         }
     }

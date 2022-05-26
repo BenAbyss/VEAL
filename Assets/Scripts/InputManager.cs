@@ -1,10 +1,12 @@
-﻿using DebugAssert = System.Diagnostics.Debug;
+﻿using System;
+using DebugAssert = System.Diagnostics.Debug;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
     private NodeManager _nodeManager;
+    public static event Action CancelAction;
     
     /// <summary>
     /// Method <c>Start</c> finds the node manager component.
@@ -24,7 +26,25 @@ public class InputManager : MonoBehaviour
             StartCoroutine(_nodeManager.CreateMidpoint());
         }
     }
-    
+
+    /// <summary>
+    /// Method <c>OnCancel</c> invokes a cancelling action upon a cancel button being pressed.
+    /// </summary>
+    public void OnCancel()
+    {
+        CancelAction?.Invoke();
+    }
+
+    /// <summary>
+    /// Method <c>OnDelete</c> deletes the currently selected node.
+    /// </summary>
+    public void OnDelete()
+    {
+        _nodeManager.DestroySelectedNode();
+    }
+
+
+
     /// <summary>
     /// Method <c>GetMouseCoords</c> gets the world coordinates of the mouse position.
     /// </summary>

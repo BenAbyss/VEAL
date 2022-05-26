@@ -1,4 +1,5 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 
 /// <summary>
@@ -6,6 +7,7 @@ using UnityEngine;
 /// </summary>
 public class NodeSideMenu : NodeConnectedObject
 {
+    [SerializeField] private GameObject node;
     private int _nodeId;
     
     public static event Action<int> Connecting;
@@ -15,7 +17,7 @@ public class NodeSideMenu : NodeConnectedObject
     /// </summary>
     public void Rename()
     {
-        Debug.Log("Rename");
+        node.GetComponent<InteractiveNode>().nameField.GetComponent<TMP_InputField>().Select();
     }
     
     /// <summary>
