@@ -91,11 +91,6 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         }
     }
 
-    public void Rename(string name)
-    {
-        Debug.Log(name);
-    }
-
 
 
     /// <summary>

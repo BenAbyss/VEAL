@@ -5,7 +5,10 @@ using UnityEngine.InputSystem;
 
 public class InputManager : MonoBehaviour
 {
+    [SerializeField] private NodeCreatorMenuManager creatorMenuManager;
     private NodeManager _nodeManager;
+
+    public static bool isTyping;
     public static event Action CancelAction;
     
     /// <summary>
@@ -13,6 +16,7 @@ public class InputManager : MonoBehaviour
     /// </summary>
     public void Start()
     {
+        isTyping = false;
         _nodeManager = GetComponent<NodeManager>();
     }
 
@@ -41,6 +45,17 @@ public class InputManager : MonoBehaviour
     public void OnDelete()
     {
         _nodeManager.DestroySelectedNode();
+    }
+
+    /// <summary>
+    /// Method <c>OnOpenCreator</c> toggles the creator menu.
+    /// </summary>
+    public void OnOpenCreator()
+    {
+        if (!isTyping)
+        {
+            creatorMenuManager.ToggleActive();
+        }
     }
 
 

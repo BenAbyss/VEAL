@@ -1,11 +1,26 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] private float transitionTime;
+    protected bool IsActive;
+    protected GameObject MenuObject;
+    protected CanvasGroup Canvas;
 
+    /// <summary>
+    /// Method <c>Awake</c> sets up object variables.
+    /// </summary>
+    public void Awake()
+    {
+        MenuObject = transform.gameObject;
+        Canvas = MenuObject.GetComponent<CanvasGroup>();
+    }
+
+    
+    
     /// <summary>
     /// Method <c>LoadScene</c> asynchronously loads a new scene.
     /// <param name="scene">The name of the scene to load.</param>
@@ -19,5 +34,25 @@ public class MenuManager : MonoBehaviour
         {
             yield return null;
         }
+    }
+
+    /// <summary>
+    /// Method <c>ToggleActive</c> toggles the active state of the menu.
+    /// </summary>
+    public void ToggleActive()
+    {
+        ChangeActivity(!IsActive);
+    }
+
+    /// <summary>
+    /// Method <c>ChangeActivity</c> changes the activity of the menu appropriately.
+    /// <param name="enable">Whether to enable the activity or not.</param>
+    /// </summary>
+    protected void ChangeActivity(bool enable)
+    {
+        IsActive = enable;
+        Canvas.alpha = enable ? 1 : 0;
+        Canvas.interactable = enable;
+        Canvas.blocksRaycasts = enable;
     }
 }

@@ -80,7 +80,7 @@ public class NodeConnectors : MonoBehaviour
     /// Method <c>BeginConnecting</c> sets the appropriate node up to begin connecting.
     /// <param name="node_id">The ID of the node to begin connecting.</param>
     /// </summary>
-    private void BeginConnecting(int node_id)
+    public void BeginConnecting(int node_id)
     {
         if (node_id == nodeId)
         {

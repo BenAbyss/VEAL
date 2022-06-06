@@ -1,12 +1,39 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using UnityEngine.EventSystems;
 using DebugAssert = System.Diagnostics.Debug;
 
-public class Midpoint : BasicNode
+public class Midpoint : BasicNode, IEndDragHandler, IPointerDownHandler
 {
     protected override string NodeType => "Midpoint";
     private string _autoConnPos;
     
+    /// <summary>
+    /// Method <c>OnPointerUp</c> marks the node as selected and reveals the side menu as the node is placed.
+    /// </summary>
+    public new void OnEndDrag(PointerEventData event_data)
+    {
+        try
+        {
+            NodeConnectors.BeginConnecting(nodeId);
+            base.OnEndDrag(event_data);
+        } catch(NullReferenceException) {}
+    }
+
+    /// <summary>
+    /// Method <c>OnPointerDown</c> marks the node as selected and reveals the side menu.
+    /// </summary>
+    public new void OnPointerDown(PointerEventData event_data)
+    {
+        try
+        {
+            NodeConnectors.BeginConnecting(nodeId);
+            base.OnPointerDown(event_data);
+        } catch(NullReferenceException) {}
+    }
+
+
+
+
     /// <summary>
     /// Method <c>GetConnector</c> gets the connector in a given position.
     /// <param name="pos">The position of the connector - Top, Right, Left or Btm.</param>

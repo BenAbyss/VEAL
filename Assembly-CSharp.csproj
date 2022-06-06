@@ -60,11 +60,13 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\InputManager.cs" />
      <Compile Include="Assets\Scripts\MenuManager.cs" />
+     <Compile Include="Assets\Scripts\NodeCreatorBtn.cs" />
      <Compile Include="Assets\Scripts\NodeCreatorMenuManager.cs" />
      <Compile Include="Assets\Scripts\Nodes\BasicNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\Connectors\NodeConnector.cs" />
      <Compile Include="Assets\Scripts\Nodes\Connectors\NodeConnectors.cs" />
      <Compile Include="Assets\Scripts\Nodes\Connectors\SerializeNodeConnectorsDict.cs" />
+     <Compile Include="Assets\Scripts\Nodes\DecisionNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\InteractiveNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\Midpoint.cs" />
      <Compile Include="Assets\Scripts\Nodes\NodeConnectedObject.cs" />

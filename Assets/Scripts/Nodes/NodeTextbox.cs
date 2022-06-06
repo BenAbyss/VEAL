@@ -42,6 +42,10 @@ public class NodeTextbox : NodeConnectedObject
     /// </summary>
     public void SetNodeId(int node_id)
     {
+        if (_textField == null)
+        {
+            Start();
+        }
         NodeId = node_id;
         _textField.text = "Node " + NodeId;
     }
@@ -64,6 +68,14 @@ public class NodeTextbox : NodeConnectedObject
         }
     }
 
+    /// <summary>
+    /// Method <c>EditEnded</c> marks the inputs as no longer typing.
+    /// </summary>
+    public void EditEnded()
+    {
+        InputManager.isTyping = false;
+    }
+    
     /// <summary>
     /// Method <c>Move</c> moves the buttons to their new position.
     /// <param name="dist">The new position of the selected node.</param>

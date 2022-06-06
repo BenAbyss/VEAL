@@ -17,6 +17,7 @@ public class NodeSideMenu : NodeConnectedObject
     /// </summary>
     public void Rename()
     {
+        InputManager.isTyping = true;
         node.GetComponent<InteractiveNode>().nameField.GetComponent<TMP_InputField>().Select();
     }
     
