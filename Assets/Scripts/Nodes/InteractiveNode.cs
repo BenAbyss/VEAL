@@ -20,6 +20,7 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
         nodeId = NodesCounter;
         NodeConnectors = GetComponent<NodeConnectors>();
         NodeConnectors.SetNodeId(nodeId);
+        NodeConnectors.SetOutputLimit(OutputLimit);
 
         var side_menu_func = sideMenu.GetComponent<NodeSideMenu>();
         side_menu_func.SetPositioning(transform.position);

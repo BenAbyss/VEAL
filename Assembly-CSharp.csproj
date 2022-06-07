@@ -59,9 +59,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\InputManager.cs" />
-     <Compile Include="Assets\Scripts\MenuManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\MenuManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\NodeCreatorMenuManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\NodeSettingsMenuManager.cs" />
      <Compile Include="Assets\Scripts\NodeCreatorBtn.cs" />
-     <Compile Include="Assets\Scripts\NodeCreatorMenuManager.cs" />
      <Compile Include="Assets\Scripts\Nodes\ANDGateNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\BasicNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\Components\NodeConnectedObject.cs" />

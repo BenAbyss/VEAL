@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -13,6 +15,7 @@ public class NodeConnector  : NodeConnectedObject
     [SerializeField] private float lineThickness;
     public static event Action MakingConnection;
     public static event Action<NodeConnector> ConnectionRecipientMade;
+    public static event Action<NodeConnectors> ExcessOutputMade;
 
     public static bool ConnectionsOccurring;
     public bool isVisible;
@@ -55,6 +58,7 @@ public class NodeConnector  : NodeConnectedObject
         BasicNode.NodeDragged += MoveWithNode;
         ConnectionRecipientMade += FormConnectionRecipient;
         NodeManager.MidpointCreated += FormMidpointConnection;
+        ExcessOutputMade += PulseLines;
     }
 
     /// <summary>
@@ -65,6 +69,7 @@ public class NodeConnector  : NodeConnectedObject
         BasicNode.NodeDragged -= MoveWithNode;
         ConnectionRecipientMade -= FormConnectionRecipient;
         NodeManager.MidpointCreated -= FormMidpointConnection;
+        ExcessOutputMade -= PulseLines;
     }
     
     
@@ -276,6 +281,7 @@ public class NodeConnector  : NodeConnectedObject
             _connectionTo.ApplyDisconnectedSprite();
             ApplyDisconnectedSprite();
             _connectionTo = null;
+            connectorGroup.DecrementOutputCount();
         }
         
         MakingConnection?.Invoke();
@@ -360,8 +366,10 @@ public class NodeConnector  : NodeConnectedObject
     private void FormConnectionRecipient(NodeConnector recipient)
     {
         if (_connectingNode && !connectorGroup.CheckForConnectedNode(recipient.GetNodesId()) && 
-            !NodeManager.MidpointPathHitsNode(recipient.GetNodesId(), this))
+            !NodeManager.MidpointPathHitsNode(recipient.GetNodesId(), this) 
+            && !connectorGroup.OutputLimitReached())
         {
+            connectorGroup.IncrementOutputCount();
             _connectionTo = recipient;
             _connectionTo.SetConnectionFrom(this);
             DrawConnection();
@@ -371,13 +379,22 @@ public class NodeConnector  : NodeConnectedObject
         else if (_connectingNode)
         {
             RemoveDrawings();
+            if (connectorGroup.OutputLimitReached())
+            {
+                ExcessOutputMade?.Invoke(connectorGroup);
+            }
         }
+
         _connectingNode = false;
     }
 
+    /// <summary>
+    /// Method <c>FormMidpointConnection</c> forms a connection to the new midpoint.
+    /// <param name="midpt">The new midpoint to connect to.</param>
+    /// </summary>
     private void FormMidpointConnection(Midpoint midpt)
     {
-        if (!_connectingNode) return;
+        if (!_connectingNode || connectorGroup.OutputLimitReached()) return;
         var angle = Mathf.Atan2(transform.position.y - midpt.transform.position.y,
             transform.position.x - midpt.transform.position.x) * Mathf.Rad2Deg - 90;
         var pos = "";
@@ -402,5 +419,19 @@ public class NodeConnector  : NodeConnectedObject
         }
 
         FormConnectionRecipient(midpt.GetConnector(pos + "Conn"));
+    }
+
+    private async void PulseLines(NodeConnectors conn_group)
+    {
+        if (conn_group == connectorGroup && _arrowTipRenderer != null)
+        {
+            _lineRenderer.material = Resources.Load<Material>("Materials/Arrow-Red-Material");
+            _arrowTipRenderer.material = Resources.Load<Material>("Materials/Arrow-Red-Material");
+                
+            await Task.Delay(500);
+
+            _lineRenderer.material = Resources.Load<Material>("Materials/Arrow-Material");
+            _arrowTipRenderer.material = Resources.Load<Material>("Materials/Arrow-Material");
+        }
     }
 }

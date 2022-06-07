@@ -10,6 +10,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     
     protected static int NodesCounter;
     protected virtual string NodeType => "Basic Node";
+    protected virtual int OutputLimit => 1;
     public int nodeId;
     private Vector3 _mouseRelativePos;
     protected NodeConnectors NodeConnectors;
@@ -52,6 +53,15 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
         return NodeConnectors;
     }
     
+    /// <summary>
+    /// Method <c>GetNodeType</c> gets the string type of the node.
+    /// <returns>The node type.</returns>
+    /// </summary>
+    public string GetNodeType()
+    {
+        return NodeType;
+    }
+    
     
     
     /// <summary>
@@ -92,6 +102,15 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     }
 
 
+
+    /// <summary>
+    /// Method <c>ChangeColour</c> changes the colour of the nodes internals.
+    /// <param name="colour">The colour value to set it to.</param>
+    /// </summary>
+    public void ChangeColour(Color colour)
+    {
+        GetComponent<SpriteRenderer>().color = colour;
+    }
 
     /// <summary>
     /// Method <c>NewNodeSelected</c> marks all other nodes as not selected.

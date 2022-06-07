@@ -11,6 +11,7 @@ public class NodeSideMenu : NodeConnectedObject
     private int _nodeId;
     
     public static event Action<int> Connecting;
+    public static event Action<InteractiveNode> Editing;
     
     /// <summary>
     /// Method <c>Rename</c> lets the user rename the node.
@@ -34,7 +35,7 @@ public class NodeSideMenu : NodeConnectedObject
     /// </summary>
     public void Edit()
     {
-        Debug.Log("Edit");
+        Editing?.Invoke(node.GetComponentInChildren<InteractiveNode>());
     }
 
     /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -47,7 +48,16 @@ public class NodeTextbox : NodeConnectedObject
             Start();
         }
         NodeId = node_id;
-        _textField.text = "Node " + NodeId;
+
+        // sets the text file to the node id, or 50% if it's a probability node
+        if (Node.GetComponent<InteractiveNode>().GetNodeType() == "Probability Node")
+        {
+            _textField.text = "50%";
+        }
+        else
+        {
+            _textField.text = "Node " + NodeId;
+        }
     }
 
 
@@ -64,7 +74,12 @@ public class NodeTextbox : NodeConnectedObject
             _textField.text = _textField.text.TrimEnd( '\n' );
             var eventSystem = EventSystem.current;
             if (!eventSystem.alreadySelecting) eventSystem.SetSelectedGameObject (null);
-            
+        }
+        
+        // if it's a probability node, remove any non-numbers and add a %
+        if (Node.GetComponent<InteractiveNode>().GetNodeType() == "Probability Node")
+        {
+            _textField.text = Regex.Replace(_textField.text, "[^0-9]", "") + "%";
         }
     }
 

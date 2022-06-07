@@ -12,6 +12,9 @@ public class NodeConnectors : MonoBehaviour
     public int nodeId;
     public string nodeType;
 
+    private int _outputLimit;
+    private int _outputCount;
+
     
 
     /// <summary>
@@ -45,6 +48,8 @@ public class NodeConnectors : MonoBehaviour
         {
             connectors.GetNodeFunction(connector.Key).connectorGroup = this;
         }
+
+        _outputCount = 0;
     }
 
     /// <summary>
@@ -74,7 +79,41 @@ public class NodeConnectors : MonoBehaviour
         nodeType = node_type;
     }
     
+    /// <summary>
+    /// Method <c>SetOutputLimit</c> sets the amount of possible outputs.
+    /// <param name="output_limit">The maximum amount of outputs allowed.</param>
+    /// </summary>
+    public void SetOutputLimit(int output_limit)
+    {
+        _outputLimit = output_limit;
+    }
     
+    /// <summary>
+    /// Method <c>GetOutputLimitReached</c> states whether the output limit has been reached.
+    /// <returns>A boolean stating whether the limit has been reached</returns>
+    /// </summary>
+    public bool OutputLimitReached()
+    {
+        return _outputLimit <= _outputCount;
+    }
+    
+    
+    
+    /// <summary>
+    /// Method <c>IncrementOutputCount</c> increments the output counter by 1.
+    /// </summary>
+    public void IncrementOutputCount()
+    {
+        _outputCount += 1;
+    }
+    
+    /// <summary>
+    /// Method <c>DecrementOutputCount</c> decrements the output counter by 1.
+    /// </summary>
+    public void DecrementOutputCount()
+    {
+        _outputCount -= 1;
+    }
     
     /// <summary>
     /// Method <c>BeginConnecting</c> sets the appropriate node up to begin connecting.
