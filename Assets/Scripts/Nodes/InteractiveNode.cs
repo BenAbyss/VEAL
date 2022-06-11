@@ -29,6 +29,7 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
         name_textbox.SetNodeId(nodeId);
         name_textbox.Move(transform.position);
         NodeConnectors.SetupConnectors(transform.position);
+        NodeConnectors.SetNodeType(NodeType);
         sideMenu.SetActive(false);
     }
 
@@ -47,7 +48,7 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
     {
         NodeSelected -= NewNodeSelected;
     }
-    
+
 
 
     /// <summary>

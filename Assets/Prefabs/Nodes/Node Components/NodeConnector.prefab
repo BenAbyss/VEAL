@@ -117,6 +117,7 @@ MonoBehaviour:
   - 1
   - 10
   lineThickness: 4
+  ioType: Both
   isVisible: 0
   connectorGroup: {fileID: 0}
 --- !u!114 &4579833574169297046

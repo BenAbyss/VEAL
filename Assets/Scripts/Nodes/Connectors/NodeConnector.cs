@@ -13,6 +13,7 @@ public class NodeConnector  : NodeConnectedObject
 {
     [SerializeField] private float[] arrowThickness; // [start_width, end_width, length_percent]
     [SerializeField] private float lineThickness;
+    [SerializeField] private string ioType;
     public static event Action MakingConnection;
     public static event Action<NodeConnector> ConnectionRecipientMade;
     public static event Action<NodeConnectors> ExcessOutputMade;
@@ -255,7 +256,7 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private void ApplyConnectedSprite()
     {
-        _renderer.sprite = Resources.Load<Sprite>("Sprites/NodeConnectors/ConnectedNodeConnector");
+        _renderer.sprite = Resources.Load<Sprite>("Sprites/Node Connectors/ConnectedNodeConnector");
     }
     
     /// <summary>
@@ -263,7 +264,7 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private void ApplyDisconnectedSprite()
     {
-        _renderer.sprite = Resources.Load<Sprite>("Sprites/NodeConnectors/DisconnectedNodeConnector");
+        _renderer.sprite = Resources.Load<Sprite>("Sprites/Node Connectors/DisconnectedNodeConnector");
     }
     
     /// <summary>
@@ -285,7 +286,7 @@ public class NodeConnector  : NodeConnectedObject
         }
         
         MakingConnection?.Invoke();
-        if (connectorGroup.isConnecting)
+        if (connectorGroup.isConnecting && ioType != "Input")
         {
             ConnectionsOccurring = true;
             if (_connectionTo == null)
@@ -293,7 +294,7 @@ public class NodeConnector  : NodeConnectedObject
                 _connectingNode = true;
             }
         }
-        else
+        else if (ioType != "Output")
         {
             ConnectionsOccurring = false;
             ConnectionRecipientMade?.Invoke(this);

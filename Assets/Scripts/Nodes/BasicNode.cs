@@ -12,6 +12,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     protected virtual string NodeType => "Basic Node";
     protected virtual int OutputLimit => 1;
     public int nodeId;
+    public new string name;
     private Vector3 _mouseRelativePos;
     protected NodeConnectors NodeConnectors;
 
@@ -60,6 +61,15 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     public string GetNodeType()
     {
         return NodeType;
+    }
+    
+    /// <summary>
+    /// Method <c>SetNodeName</c> sets the node's name.
+    /// <param name="new_name">The new name for the node.</param>
+    /// </summary>
+    public void SetNodeName(string new_name)
+    {
+        name = new_name;
     }
     
     

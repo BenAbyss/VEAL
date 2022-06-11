@@ -95,46 +95,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5482732380506215644}
   m_CullTransparentMesh: 0
---- !u!114 &5260644819852424856
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7949488855073091793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 616dd89f5c46450ca86d3aff8de5266c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  connectors:
-    keys:
-    - TopInput
-    - BtmInput
-    - Output
-    values:
-    - {fileID: 7697268712810071804}
-    - {fileID: 7569375866858760126}
-    - {fileID: 2120974359956310728}
-  connectedNode: {fileID: 7949488855073091793}
-  isConnecting: 0
-  nodeId: 0
-  nodeType: 
---- !u!114 &9074689175556645841
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7949488855073091793}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76d1f99e5fd747ceaf883b9f0ad6d62a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nodeId: 0
-  sideMenu: {fileID: 6856868571165380270}
-  nameField: {fileID: 8061833406178651924}
 --- !u!60 &5076496703987029280
 PolygonCollider2D:
   m_ObjectHideFlags: 0
@@ -175,6 +135,47 @@ PolygonCollider2D:
       - {x: 4.2788477, y: -19.795551}
       - {x: 7.5682664, y: -18.99964}
       - {x: 9.98165, y: -17.79651}
+--- !u!114 &5260644819852424856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7949488855073091793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 616dd89f5c46450ca86d3aff8de5266c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  connectors:
+    keys:
+    - TopInput
+    - BtmInput
+    - Output
+    values:
+    - {fileID: 7697268712810071804}
+    - {fileID: 7569375866858760126}
+    - {fileID: 2120974359956310728}
+  connectedNode: {fileID: 7949488855073091793}
+  isConnecting: 0
+  nodeId: 0
+  nodeType: 
+--- !u!114 &9074689175556645841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7949488855073091793}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76d1f99e5fd747ceaf883b9f0ad6d62a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeId: 0
+  name: 
+  sideMenu: {fileID: 6856868571165380270}
+  nameField: {fileID: 8061833406178651924}
 --- !u!1 &8061833406178651924
 GameObject:
   m_ObjectHideFlags: 0
@@ -1000,6 +1001,11 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 7.6
       objectReference: {fileID: 0}
+    - target: {fileID: 7826403463905936866, guid: ff1030a41e470374f89eef709cdda0a6,
+        type: 3}
+      propertyPath: ioType
+      value: Output
+      objectReference: {fileID: 0}
     - target: {fileID: 8982485678019344782, guid: ff1030a41e470374f89eef709cdda0a6,
         type: 3}
       propertyPath: m_Radius
@@ -1096,6 +1102,11 @@ PrefabInstance:
       propertyPath: m_Size.y
       value: 7.6
       objectReference: {fileID: 0}
+    - target: {fileID: 7826403463905936866, guid: ff1030a41e470374f89eef709cdda0a6,
+        type: 3}
+      propertyPath: ioType
+      value: Input
+      objectReference: {fileID: 0}
     - target: {fileID: 8982485678019344782, guid: ff1030a41e470374f89eef709cdda0a6,
         type: 3}
       propertyPath: m_Radius
@@ -1191,6 +1202,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.y
       value: 7.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7826403463905936866, guid: ff1030a41e470374f89eef709cdda0a6,
+        type: 3}
+      propertyPath: ioType
+      value: Input
       objectReference: {fileID: 0}
     - target: {fileID: 8982485678019344782, guid: ff1030a41e470374f89eef709cdda0a6,
         type: 3}

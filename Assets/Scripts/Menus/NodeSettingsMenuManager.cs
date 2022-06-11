@@ -59,8 +59,18 @@ public class NodeSettingsMenuManager : MenuManager
     /// </summary>
     private void ChangeNode(int id_selected, Vector3 new_pos, GameObject game_obj)
     {
-        node = game_obj.GetComponent<InteractiveNode>();
+        ChangeNode(game_obj.GetComponent<InteractiveNode>());
+    }
+
+    /// <summary>
+    /// Method <c>ToggleActive</c> updates the menu for the new node.
+    /// <param name="new_node">The selected node.</param>
+    /// </summary>
+    private void ChangeNode(InteractiveNode new_node)
+    {
+        node = new_node;
         UpdateColour(node.GetComponent<SpriteRenderer>().color);
+        GameObject.Find("NodeTitle").GetComponent<TextMeshProUGUI>().text = node.name;
     }
 
     /// <summary>
@@ -69,9 +79,8 @@ public class NodeSettingsMenuManager : MenuManager
     /// </summary>
     private void ToggleActive(InteractiveNode new_node)
     {
-        node = new_node;
         base.ToggleActive();
-        UpdateColour(node.GetComponent<SpriteRenderer>().color);
+        ChangeNode(new_node);
     }
 
 
@@ -142,9 +151,8 @@ public class NodeSettingsMenuManager : MenuManager
     {
         if (!IsActive) return;
         
-        _textField.text = $"#{((int) colour.r*255).ToString("X2")}" +
-                          $"{((int)colour.g*255).ToString("X2")}{((int)colour.b*255).ToString("X2")}";
-        Debug.Log(_textField.text);
+        _textField.text = $"#{((int) (colour.r*255)).ToString("X2")}" +
+                          $"{((int)(colour.g*255)).ToString("X2")}{((int)(colour.b*255)).ToString("X2")}";
         OnColourHexAdjusted();
     }
 }

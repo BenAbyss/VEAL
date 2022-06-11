@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class NodeTextbox : NodeConnectedObject
 {
     [SerializeField] protected GameObject Node;
+    private InteractiveNode _nodeFunc;
     protected int NodeId;
     protected TextMeshProUGUI _text;
     protected TMP_InputField _textField;
@@ -17,6 +18,7 @@ public class NodeTextbox : NodeConnectedObject
     /// </summary>
     public void Start()
     {
+        _nodeFunc = Node.GetComponent<InteractiveNode>();
         _text = GetComponentInChildren<TextMeshProUGUI>();
         _textField = GetComponent<TMP_InputField>();
     }
@@ -58,6 +60,7 @@ public class NodeTextbox : NodeConnectedObject
         {
             _textField.text = "Node " + NodeId;
         }
+        _nodeFunc.SetNodeName(_textField.text);
     }
 
 
@@ -81,6 +84,7 @@ public class NodeTextbox : NodeConnectedObject
         {
             _textField.text = Regex.Replace(_textField.text, "[^0-9]", "") + "%";
         }
+        _nodeFunc.SetNodeName(_textField.text);
     }
 
     /// <summary>
