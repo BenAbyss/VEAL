@@ -1,16 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class NodeSettingsMenuManager : MenuManager
 {
-    [SerializeField] private GameObject colourSegment; 
+    [SerializeField] private GameObject colourSegment;
     [SerializeField] private Image colourSample;
+    [SerializeField] private GameObject specDefaultSegment;
 
     private InteractiveNode node;
+    private GameObject ActiveSpecsPanel;
+    private Dictionary<string, GameObject> specsPanels;
     
     private Slider[] _colourSliders;
     private TextMeshProUGUI[] _colourValues;
@@ -27,6 +32,8 @@ public class NodeSettingsMenuManager : MenuManager
             .ToList().FindAll( x=>x.name.EndsWith("Value"))
             .OrderByDescending(x=>x.name).ToArray();
         _textField = GetComponentInChildren<TMP_InputField>();
+        SetupSpecsPanels();
+        specDefaultSegment.SetActive(false);
     }
 
     /// <summary>
@@ -49,21 +56,46 @@ public class NodeSettingsMenuManager : MenuManager
         InteractiveNode.NodeSelected -= ChangeNode;
     }
 
-
+    /// <summary>
+    /// Method <c>SetupSpecsPanels</c> loads and stores all the specific panels.
+    /// </summary>
+    private void SetupSpecsPanels()
+    {
+        specsPanels = new Dictionary<string, GameObject>();
+        string panel_name;
+        GameObject panel;
+        
+        foreach (var node_type in new []{"Interactive", "Decision", "Probability", "Loop", "AND"})
+        {
+            panel_name = $"Assets/Prefabs/Node Settings/Node Settings Panels/{node_type}SpecsPanel.prefab";
+            panel = Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(panel_name), 
+                transform, true);
+            panel.transform.position = specDefaultSegment.transform.position;
+            panel.SetActive(false);
+            specsPanels[node_type] = panel;
+        }
+    }
+    
+    
 
     /// <summary>
-    /// Method <c>ToggleActive</c> updates the menu for the new node.
+    /// Method <c>ChangeNode</c> changes the node to the new node object.
     /// <param name="id_selected">The id of the selected node.</param>
     /// <param name="new_pos">The new position of the selected node.</param>
     /// <param name="game_obj">The selected node game object.</param>
     /// </summary>
     private void ChangeNode(int id_selected, Vector3 new_pos, GameObject game_obj)
     {
-        ChangeNode(game_obj.GetComponent<InteractiveNode>());
+        if (node == null) return;
+        
+        if (id_selected != node.nodeId)
+        {
+            ChangeNode(game_obj.GetComponent<InteractiveNode>());
+        }
     }
 
     /// <summary>
-    /// Method <c>ToggleActive</c> updates the menu for the new node.
+    /// Method <c>ChangeNode</c> updates the menu for the new node.
     /// <param name="new_node">The selected node.</param>
     /// </summary>
     private void ChangeNode(InteractiveNode new_node)
@@ -71,6 +103,7 @@ public class NodeSettingsMenuManager : MenuManager
         node = new_node;
         UpdateColour(node.GetComponent<SpriteRenderer>().color);
         GameObject.Find("NodeTitle").GetComponent<TextMeshProUGUI>().text = node.name;
+        LoadSpecificPanel();
     }
 
     /// <summary>
@@ -81,6 +114,19 @@ public class NodeSettingsMenuManager : MenuManager
     {
         base.ToggleActive();
         ChangeNode(new_node);
+    }
+
+    /// <summary>
+    /// Method <c>LoadSpecificPanel</c> disables the current specification panel and loads the new one.
+    /// </summary>
+    private void LoadSpecificPanel()
+    {
+        if (ActiveSpecsPanel != null)
+        {
+            ActiveSpecsPanel.SetActive(false);
+        }
+        ActiveSpecsPanel = specsPanels[node.GetNodeType().Split(' ')[0]];
+        ActiveSpecsPanel.SetActive(true);
     }
 
 

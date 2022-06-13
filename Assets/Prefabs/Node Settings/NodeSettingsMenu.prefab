@@ -168,6 +168,7 @@ MonoBehaviour:
   transitionTime: 0
   colourSegment: {fileID: 7806247277843384245}
   colourSample: {fileID: 8857850674955715126}
+  specDefaultSegment: {fileID: 8593591839094171854}
 --- !u!225 &3206770279402203348
 CanvasGroup:
   m_ObjectHideFlags: 0
