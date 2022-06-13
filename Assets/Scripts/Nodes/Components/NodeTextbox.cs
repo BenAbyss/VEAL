@@ -14,9 +14,9 @@ public class NodeTextbox : NodeConnectedObject
     protected TMP_InputField _textField;
 
     /// <summary>
-    /// Method <c>Start</c> sets up appropriate components.
+    /// Method <c>Awake</c> sets up appropriate components.
     /// </summary>
-    public void Start()
+    public void Awake()
     {
         _nodeFunc = Node.GetComponent<InteractiveNode>();
         _text = GetComponentInChildren<TextMeshProUGUI>();
@@ -47,7 +47,7 @@ public class NodeTextbox : NodeConnectedObject
     {
         if (_textField == null)
         {
-            Start();
+            Awake();
         }
         NodeId = node_id;
 
@@ -87,6 +87,15 @@ public class NodeTextbox : NodeConnectedObject
         _nodeFunc.SetNodeName(_textField.text);
     }
 
+    /// <summary>
+    /// Method <c>UpdateValueToName</c> updates the text value to the new name.
+    /// <param name="new_name">The new name of the node.</param>
+    /// </summary>
+    public void UpdateValueToName(string new_name)
+    {
+        _textField.text = new_name;
+    }
+    
     /// <summary>
     /// Method <c>EditEnded</c> marks the inputs as no longer typing.
     /// </summary>

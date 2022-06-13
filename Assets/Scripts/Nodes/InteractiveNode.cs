@@ -11,23 +11,31 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
     [SerializeField] public GameObject nameField;
     protected override string NodeType => "Interactive Node";
 
+    private NodeTextbox _nodeTextbox;
+
     /// <summary>
-    /// Method <c>Start</c> sets the node counter, finds relevant components and disables hidden elements.
+    /// Method <c>Awake</c> sets the node counter and finds relevant components.
     /// </summary>
-    public new void Start()
+    public new void Awake()
     {
         NodesCounter += 1;
         nodeId = NodesCounter;
         NodeConnectors = GetComponent<NodeConnectors>();
         NodeConnectors.SetNodeId(nodeId);
         NodeConnectors.SetOutputLimit(OutputLimit);
-
+        _nodeTextbox = nameField.GetComponent<NodeTextbox>();
+        _nodeTextbox.SetNodeId(nodeId);
+    }
+    
+    /// <summary>
+    /// Method <c>Start</c> disables hidden elements.
+    /// </summary>
+    public new void Start()
+    {
         var side_menu_func = sideMenu.GetComponent<NodeSideMenu>();
         side_menu_func.SetPositioning(transform.position);
         side_menu_func.SetNodeId(nodeId);
-        var name_textbox = nameField.GetComponent<NodeTextbox>();
-        name_textbox.SetNodeId(nodeId);
-        name_textbox.Move(transform.position);
+        _nodeTextbox.Move(transform.position);
         NodeConnectors.SetupConnectors(transform.position);
         NodeConnectors.SetNodeType(NodeType);
         sideMenu.SetActive(false);
@@ -49,6 +57,27 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
         NodeSelected -= NewNodeSelected;
     }
 
+    /// <summary>
+    /// Method <c>SetNodeName</c> sets the node's name.
+    /// <param name="new_name">The new name for the node.</param>
+    /// </summary>
+    public override void SetNodeName(string new_name)
+    {
+        base.SetNodeName(new_name);
+        _nodeTextbox.UpdateValueToName(new_name);
+    }
+    
+    /// <summary>
+    /// Method <c>SetNodeId</c> sets the node's id.
+    /// This should ONLY be used for deserialization.
+    /// <param name="new_id">The new id for the node.</param>
+    /// </summary>
+    public override void SetNodeId(int new_id)
+    {
+        base.SetNodeId(new_id);
+        _nodeTextbox.SetNodeId(nodeId);
+    }
+    
 
 
     /// <summary>
@@ -86,7 +115,7 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
     /// <param name="new_pos">The new position of the selected node.</param>
     /// <param name="game_obj">The selected node game object.</param>
     /// </summary>
-    private void NewNodeSelected(int id_selected, Vector3 new_pos=default, GameObject game_obj=default)
+    private new void NewNodeSelected(int id_selected, Vector3 new_pos=default, GameObject game_obj=default)
     {
         if (nodeId != id_selected)
         {

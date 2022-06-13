@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class NodeConnectors : MonoBehaviour
 {
-    [SerializeField] protected SerializeNodeConnectorsDict connectors;
+    [SerializeField] public SerializeNodeConnectorsDict connectors;
     [SerializeField] protected GameObject connectedNode;
+    
+    public static event Action<int, int> OutputCountChanged;
 
     public bool isConnecting;
     public int nodeId;
@@ -48,8 +50,6 @@ public class NodeConnectors : MonoBehaviour
         {
             connectors.GetNodeFunction(connector.Key).connectorGroup = this;
         }
-
-        _outputCount = 0;
     }
 
     /// <summary>
@@ -71,6 +71,33 @@ public class NodeConnectors : MonoBehaviour
     }
     
     /// <summary>
+    /// Method <c>GetOutputCount</c> returns the amount of outputs.
+    /// <returns>The amount of outputs.</returns>
+    /// </summary>
+    public int GetOutputCount()
+    {
+        return _outputCount;
+    }
+    
+    /// <summary>
+    /// Method <c>GetOutputCount</c> returns the amount of possible outputs.
+    /// <returns>The amount of possible outputs.</returns>
+    /// </summary>
+    public int GetOutputLimit()
+    {
+        return _outputLimit;
+    }
+    
+    /// <summary>
+    /// Method <c>GetConnectedNodeFunc</c> gets the script object of the connected node.
+    /// <returns>The script object of the connected node.</returns>
+    /// </summary>
+    public BasicNode GetConnectedNodeFunc()
+    {
+        return connectedNode.GetComponent<BasicNode>();
+    }
+
+    /// <summary>
     /// Method <c>SetNodeType</c> sets the class type of the node.
     /// <param name="node_type">The type of the relevant node.</param>
     /// </summary>
@@ -87,7 +114,7 @@ public class NodeConnectors : MonoBehaviour
     {
         _outputLimit = output_limit;
     }
-    
+
     /// <summary>
     /// Method <c>GetOutputLimitReached</c> states whether the output limit has been reached.
     /// <returns>A boolean stating whether the limit has been reached</returns>
@@ -97,22 +124,43 @@ public class NodeConnectors : MonoBehaviour
         return _outputLimit <= _outputCount;
     }
     
-    
-    
+    /// <summary>
+    /// Method <c>OutputLimitExceeded</c> states whether the output limit has been exceeded.
+    /// <returns>A boolean stating whether the limit has been exceeded</returns>
+    /// </summary>
+    public bool OutputLimitExceeded()
+    {
+        return _outputLimit < _outputCount;
+    }
+
+
+
     /// <summary>
     /// Method <c>IncrementOutputCount</c> increments the output counter by 1.
+    /// <param name="val">The amount to increment by</param>
+    /// <param name="call_change">Whether to invoke the change for midpoints</param>
     /// </summary>
-    public void IncrementOutputCount()
+    public void IncrementOutputCount(int val=1, bool call_change=true)
     {
-        _outputCount += 1;
+        _outputCount += val;
+        if (call_change)
+        {
+            OutputCountChanged?.Invoke(nodeId, val);
+        }
     }
-    
+
     /// <summary>
     /// Method <c>DecrementOutputCount</c> decrements the output counter by 1.
+    /// <param name="val">The amount to decrement by</param>
+    /// <param name="call_change">Whether to invoke the change for midpoints</param>
     /// </summary>
-    public void DecrementOutputCount()
+    public void DecrementOutputCount(int val=1, bool call_change=true)
     {
-        _outputCount -= 1;
+        _outputCount -= val;
+        if (call_change)
+        {
+            OutputCountChanged?.Invoke(nodeId, -1*val);
+        }
     }
     
     /// <summary>
@@ -162,6 +210,8 @@ public class NodeConnectors : MonoBehaviour
     
     /// <summary>
     /// Method <c>GetUsedConnectors</c> gets all connectors that are outputting and/or inputting a connection.
+    /// <param name="outputs">Whether to include outputs.</param>
+    /// <param name="inputs">Whether to include inputs.</param>
     /// <returns>Connectors with a connection.</returns>
     /// </summary>
     public List<NodeConnector> GetUsedConnectors(bool outputs = true, bool inputs = true)
@@ -178,8 +228,29 @@ public class NodeConnectors : MonoBehaviour
         return conns;
     }
     
-    
-    
+    /// <summary>
+    /// Method <c>GetUsedConnectors</c> gets all data of all connectors that are
+    /// outputting and/or inputting a connection.
+    /// <param name="outputs">Whether to include outputs.</param>
+    /// <param name="inputs">Whether to include inputs.</param>
+    /// <returns>Entire data of connectors with a connection.</returns>
+    /// </summary>
+    public List<KeyValuePair<string, GameObject>> GetUsedConnectorsFull(bool outputs = true, bool inputs = true)
+    {
+        var conns = new List<KeyValuePair<string, GameObject>>();
+        foreach (var connector in connectors)
+        {
+            var function = connectors.GetNodeFunction(connector.Key);
+            if (outputs && function.HasOutput() || inputs && function.HasInput())
+            {
+                conns.Add(connector);
+            }
+        }
+        return conns;
+    }
+
+
+
     /// <summary>
     /// Method <c>EnableConnectors</c> enables all connectors of a node.
     /// </summary>

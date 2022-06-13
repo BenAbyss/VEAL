@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -171,6 +172,16 @@ public class NodeConnector  : NodeConnectedObject
     }
     
     /// <summary>
+    /// Method <c>GetConnectorToName</c> gets the name of the connector this connector outputs to.
+    /// <returns>The name of the connector.</returns>
+    /// </summary>
+    public string GetConnectorToName()
+    {
+        return _connectionTo.connectorGroup.connectors.First(connector => 
+            connector.Value.GetComponent<NodeConnector>() == _connectionTo).Key;
+    }
+    
+    /// <summary>
     /// Method <c>GetConnectionFrom</c> returns node connector that connects to this.
     /// <returns>The connector object.</returns>
     /// </summary>
@@ -234,6 +245,10 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     public void ChangeVisibility(bool is_visible)
     {
+        if (_renderer == null)
+        {
+            Awake();
+        }
         _renderer.enabled = is_visible;
         _button.interactable = is_visible;
         isVisible = is_visible;
@@ -388,6 +403,31 @@ public class NodeConnector  : NodeConnectedObject
 
         _connectingNode = false;
     }
+    
+    /// <summary>
+    /// Method <c>FormLoadedConnection</c> forms a connection to the selected connector, under the
+    /// assumption it's a valid connection.
+    /// <param name="recipient">The receiving connector of the connection.</param>
+    /// <param name="connector_group">The nodes connector group.</param>
+    /// <param name="recip_conn_group">The recipient nodes connector group.</param>
+    /// </summary>
+    public void FormLoadedConnection(NodeConnector recipient, NodeConnectors connector_group, 
+        NodeConnectors recip_conn_group)
+    {
+        connectorGroup = connector_group;
+        SetupLineRenderer();
+        
+        connectorGroup.IncrementOutputCount();
+        if (recip_conn_group.nodeType == "Midpoint")
+        {
+            ((Midpoint)recip_conn_group.GetConnectedNodeFunc()).AddParent(connectorGroup.GetConnectedNodeFunc());
+        }
+        _connectionTo = recipient;
+        _connectionTo.SetConnectionFrom(this);
+        DrawConnection();
+        ApplyConnectedSprite();
+        _connectionTo.ApplyConnectedSprite();
+    }
 
     /// <summary>
     /// Method <c>FormMidpointConnection</c> forms a connection to the new midpoint.
@@ -395,7 +435,17 @@ public class NodeConnector  : NodeConnectedObject
     /// </summary>
     private void FormMidpointConnection(Midpoint midpt)
     {
-        if (!_connectingNode || connectorGroup.OutputLimitReached()) return;
+        if (!_connectingNode) return;
+        
+        // add the node to the midpoints' parents, and cancel if the midpoints' outputs would
+        // push this node over it's limit
+        midpt.AddParent(connectorGroup.GetConnectedNodeFunc());
+        if (connectorGroup.OutputLimitExceeded())
+        {
+            midpt.RemoveParent(connectorGroup.GetConnectedNodeFunc());
+            return;
+        }
+        
         var angle = Mathf.Atan2(transform.position.y - midpt.transform.position.y,
             transform.position.x - midpt.transform.position.x) * Mathf.Rad2Deg - 90;
         var pos = "";

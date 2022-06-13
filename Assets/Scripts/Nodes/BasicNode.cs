@@ -10,23 +10,32 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     
     protected static int NodesCounter;
     protected virtual string NodeType => "Basic Node";
-    protected virtual int OutputLimit => 1;
+    protected virtual int OutputLimit => 20;
     public int nodeId;
     public new string name;
     private Vector3 _mouseRelativePos;
     protected NodeConnectors NodeConnectors;
 
     /// <summary>
-    /// Method <c>Start</c> sets the node counter, finds relevant components and disables hidden elements.
+    /// Method <c>Awake</c> sets the node counter & finds relevant components.
     /// </summary>
-    public void Start()
+    public void Awake()
     {
         NodesCounter += 1;
         nodeId = NodesCounter;
         NodeConnectors = GetComponent<NodeConnectors>();
         NodeConnectors.SetNodeId(nodeId);
+        NodeConnectors.SetOutputLimit(OutputLimit);
+    }
+    
+    /// <summary>
+    /// Method <c>Start</c> further sets up the connectors.
+    /// </summary>
+    public void Start()
+    {
         NodeConnectors.SetupConnectors(transform.position);
         NodeConnectors.SetNodeType(NodeType);
+        NodeConnectors.SetOutputLimit(OutputLimit);
     }
 
     /// <summary>
@@ -62,14 +71,34 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     {
         return NodeType;
     }
+
+    /// <summary>
+    /// Method <c>GetOutputLimit</c> gets the output limit of the node.
+    /// <returns>The output limit.</returns>
+    /// </summary>
+    public int GetOutputLimit()
+    {
+        return OutputLimit;
+    }
     
     /// <summary>
     /// Method <c>SetNodeName</c> sets the node's name.
     /// <param name="new_name">The new name for the node.</param>
     /// </summary>
-    public void SetNodeName(string new_name)
+    public virtual void SetNodeName(string new_name)
     {
         name = new_name;
+    }
+
+    /// <summary>
+    /// Method <c>SetNodeId</c> sets the node's id.
+    /// This should ONLY be used for deserialization.
+    /// <param name="new_id">The new id for the node.</param>
+    /// </summary>
+    public virtual void SetNodeId(int new_id)
+    {
+        nodeId = new_id;
+        NodeConnectors.SetNodeId(nodeId);
     }
     
     
@@ -128,7 +157,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     /// <param name="new_pos">The new position of the selected node.</param>
     /// <param name="game_obj">The selected node game object.</param>
     /// </summary>
-    private void NewNodeSelected(int id_selected, Vector3 new_pos=default, GameObject game_obj=default)
+    protected void NewNodeSelected(int id_selected, Vector3 new_pos=default, GameObject game_obj=default)
     {
         if (nodeId != id_selected)
         {

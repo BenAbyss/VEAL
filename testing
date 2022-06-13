@@ -1,0 +1,5 @@
+{"nodeId":5,"nodeType":"Midpoint","nodeName":"","position":{"x":-66.07666015625,"y":12.9793701171875,"z":-1.0},"colour":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"Connections":[{"startPos":"RightConn","connNodeId":1,"endPos":"TopMidConn"},{"startPos":"BtmConn","connNodeId":2,"endPos":"TopMidConn"}]}
+{"nodeId":4,"nodeType":"Decision Node","nodeName":"Node 4","position":{"x":-17.30340576171875,"y":52.70404052734375,"z":-2.0},"colour":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"Connections":[{"startPos":"LeftConn","connNodeId":5,"endPos":"TopConn"}]}
+{"nodeId":3,"nodeType":"Interactive Node","nodeName":"Node 3","position":{"x":31.293701171875,"y":-45.3712158203125,"z":-2.0},"colour":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"Connections":[]}
+{"nodeId":2,"nodeType":"Interactive Node","nodeName":"Node 2","position":{"x":-82.767333984375,"y":-43.0113525390625,"z":-2.0},"colour":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"Connections":[]}
+{"nodeId":1,"nodeType":"Interactive Node","nodeName":"Node 1","position":{"x":-24.16357421875,"y":-41.0447998046875,"z":-2.0},"colour":{"r":1.0,"g":1.0,"b":1.0,"a":1.0},"Connections":[]}

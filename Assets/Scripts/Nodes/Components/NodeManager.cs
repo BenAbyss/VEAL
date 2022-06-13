@@ -38,8 +38,15 @@ public class NodeManager : MonoBehaviour
         foreach (var conn in node_func.GetNodeConnectors().GetUsedConnectors())
         {
             conn.ClearConnections();
+            Destroy(conn);
         }
-        Destroy(_selectedNode);
+
+        var full_obj = _selectedNode.transform.parent;
+        if (node_func.GetNodeType() != "Midpoint")
+        {
+            full_obj = full_obj.parent;
+        }
+        Destroy(full_obj.gameObject);
     }
     
     /// <summary>

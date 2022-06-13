@@ -62,14 +62,14 @@ public class NodeSettingsMenuManager : MenuManager
     private void SetupSpecsPanels()
     {
         specsPanels = new Dictionary<string, GameObject>();
-        string panel_name;
         GameObject panel;
+        GameObject prefab;
         
         foreach (var node_type in new []{"Interactive", "Decision", "Probability", "Loop", "AND"})
         {
-            panel_name = $"Assets/Prefabs/Node Settings/Node Settings Panels/{node_type}SpecsPanel.prefab";
-            panel = Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(panel_name), 
-                transform, true);
+            prefab = Resources.Load($"Prefabs/Node Settings/Node Settings Panels/{node_type}SpecsPanel") 
+                as GameObject;
+            panel = Instantiate(prefab, transform, true);
             panel.transform.position = specDefaultSegment.transform.position;
             panel.SetActive(false);
             specsPanels[node_type] = panel;
