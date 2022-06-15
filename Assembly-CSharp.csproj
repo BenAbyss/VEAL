@@ -77,6 +77,7 @@
      <Compile Include="Assets\Scripts\Nodes\LoopNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\Midpoint.cs" />
      <Compile Include="Assets\Scripts\Nodes\ProbabilityNode.cs" />
+     <Compile Include="Assets\Scripts\Persistent Data\NodeSave.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SaveSystem.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SceneSave.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SerializedConnection.cs" />

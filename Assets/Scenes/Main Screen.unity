@@ -1238,6 +1238,78 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1751214142 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7083605097648905094, guid: 5f5883d72fd37144c9f68e620b0d0d7d,
+    type: 3}
+  m_PrefabInstance: {fileID: 694518694}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1751214144 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8103453855202789782, guid: 5f5883d72fd37144c9f68e620b0d0d7d,
+    type: 3}
+  m_PrefabInstance: {fileID: 694518694}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751214142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1751214146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1751214142}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1751214144}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 640114531}
+        m_MethodName: SaveSelectedNode
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1001 &1809649204
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1602,39 +1674,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8071177392465810511, guid: a06473eb70794d343a1a5e5e8114841c,
         type: 3}
-      propertyPath: coreNodes.Array.size
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8071177392465810511, guid: a06473eb70794d343a1a5e5e8114841c,
-        type: 3}
-      propertyPath: coreNodes.Array.data[0]
+      propertyPath: nodeSaver
       value: 
-      objectReference: {fileID: 1224517785766820470, guid: 7c2c52afebdb8c5408f6b59a569121e3,
-        type: 3}
-    - target: {fileID: 8071177392465810511, guid: a06473eb70794d343a1a5e5e8114841c,
-        type: 3}
-      propertyPath: coreNodes.Array.data[1]
-      value: 
-      objectReference: {fileID: 1216304590301343279, guid: fbe85d74ff223b64b9dd422f4d80a190,
-        type: 3}
-    - target: {fileID: 8071177392465810511, guid: a06473eb70794d343a1a5e5e8114841c,
-        type: 3}
-      propertyPath: coreNodes.Array.data[2]
-      value: 
-      objectReference: {fileID: 8722358797124962936, guid: ab55e68c89764c44eb4ddf019a3bf57f,
-        type: 3}
-    - target: {fileID: 8071177392465810511, guid: a06473eb70794d343a1a5e5e8114841c,
-        type: 3}
-      propertyPath: coreNodes.Array.data[3]
-      value: 
-      objectReference: {fileID: 8561569712981704872, guid: 8253d9ecadcf6e44f9630d77cd3cccf5,
-        type: 3}
-    - target: {fileID: 8071177392465810511, guid: a06473eb70794d343a1a5e5e8114841c,
-        type: 3}
-      propertyPath: coreNodes.Array.data[4]
-      value: 
-      objectReference: {fileID: 8421752101769231503, guid: 9337a4bf21a1ab345af69a3e43b7dd76,
-        type: 3}
+      objectReference: {fileID: 2014251531}
     - target: {fileID: 8922424151092234876, guid: a06473eb70794d343a1a5e5e8114841c,
         type: 3}
       propertyPath: m_AnchoredPosition.x

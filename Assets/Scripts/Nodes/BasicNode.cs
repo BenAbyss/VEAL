@@ -8,7 +8,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     public static event Action<int, Vector3, GameObject> NodeSelected;
     public static event Action<int, Vector3, bool> NodeDragged;
     
-    protected static int NodesCounter;
+    public static int NodesCounter;
     protected virtual string NodeType => "Basic Node";
     protected virtual int OutputLimit => 20;
     public int nodeId;

@@ -12,6 +12,7 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
     protected override string NodeType => "Interactive Node";
 
     private NodeTextbox _nodeTextbox;
+    private string _internalsName;
 
     /// <summary>
     /// Method <c>Awake</c> sets the node counter and finds relevant components.
@@ -76,6 +77,24 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
     {
         base.SetNodeId(new_id);
         _nodeTextbox.SetNodeId(nodeId);
+    }
+    
+    /// <summary>
+    /// Method <c>SetInternalsName</c> sets the node's internals name.
+    /// <param name="new_name">The new internals name.</param>
+    /// </summary>
+    public void SetInternalsName(string new_name)
+    {
+        _internalsName = new_name;
+    }
+    
+    /// <summary>
+    /// Method <c>GetInternalsName</c> returns the node's internals name.
+    /// <returns>The internals name</returns>
+    /// </summary>
+    public string GetInternalsName()
+    {
+        return _internalsName;
     }
     
 

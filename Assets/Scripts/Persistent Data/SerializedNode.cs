@@ -10,7 +10,7 @@ using UnityEngine.Serialization;
     public string nodeName;
     public Vector3 position;
     public Color colour;
-    public List<SerializedConnection> Connections;
+    public List<SerializedConnection> connections;
 
     /// <summary>
     /// Method <c>SerializedNode</c> initiates a serializable node from a node game object.
@@ -42,10 +42,10 @@ using UnityEngine.Serialization;
     /// </summary>
     private void SerializeConnData(NodeConnectors data)
     {
-        Connections = new List<SerializedConnection>();
+        connections = new List<SerializedConnection>();
         foreach (var conn in data.GetUsedConnectorsFull(true, false))
         {
-            Connections.Add(new SerializedConnection(conn.Key, conn.Value.GetComponent<NodeConnector>()));
+            connections.Add(new SerializedConnection(conn.Key, conn.Value.GetComponent<NodeConnector>()));
         }
     }
 }

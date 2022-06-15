@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,8 @@ public class NodeCreatorMenuManager : MenuManager
 {
     [SerializeField] private List<GameObject> coreNodes;
     [SerializeField] private List<GameObject> scrollerContents;
+    [SerializeField] private GameObject basePanel;
+    private NodeSave _nodeSaver;
     private List<GameObject> _customNodes = new List<GameObject>();
 
 
@@ -16,12 +19,67 @@ public class NodeCreatorMenuManager : MenuManager
     /// </summary>
     private void Start()
     {
+        _nodeSaver = GetComponent<NodeSave>();
+        _nodeSaver.SetCreatorManager(this);
+        GetCustomNodes();
         SetupScrollers();
         CloseMenu();
+    }
+    
+    /// <summary>
+    /// Method <c>OnEnable</c> sets reactionary method calls to invoked events.
+    /// </summary>
+    protected new void OnEnable()
+    {
+        NodeSave.NewSavedNode += UpdateCustomNodes;
+    }
+
+    /// <summary>
+    /// Method <c>OnDisable</c> disables reactionary method calls to invoked events.
+    /// </summary>
+    protected new void OnDisable()
+    {
+        NodeSave.NewSavedNode -= UpdateCustomNodes;
     }
 
 
 
+    public GameObject BuildSavedNodePanel(GameObject node)
+    {
+        var node_func = node.GetComponentInChildren<BasicNode>();
+        var new_panel = Instantiate(basePanel, scrollerContents[1].GetComponent<GridLayoutGroup>().transform);
+        
+        new_panel.GetComponentInChildren<Image>().sprite = 
+            node_func.gameObject.GetComponent<SpriteRenderer>().sprite;
+        new_panel.GetComponentInChildren<Image>().color = 
+            node_func.gameObject.GetComponent<SpriteRenderer>().color;
+        new_panel.GetComponentInChildren<TextMeshProUGUI>().text = node_func.name;
+        new_panel.GetComponentInChildren<NodeCreatorBtn>().node = node;
+        
+        return new_panel;
+    }
+    
+    /// <summary>
+    /// Method <c>UpdateCustomNodes</c> gets all the custom made and saved nodes, then updates the scrollers.
+    /// </summary>
+    public void UpdateCustomNodes()
+    {
+        GetCustomNodes();
+        SetupScrollers();
+    }
+    
+    /// <summary>
+    /// Method <c>GetCustomNodes</c> gets all the custom made and saved nodes.
+    /// </summary>
+    private void GetCustomNodes()
+    {
+        foreach (var node in _customNodes)
+        {
+            Destroy(node);
+        }
+        _customNodes = _nodeSaver.BuildAllSavedNodePanels();
+    }
+    
     /// <summary>
     /// Method <c>SetupScrollers</c> sets up the scrollers to be filled with the appropriate options.
     /// </summary>
@@ -40,9 +98,12 @@ public class NodeCreatorMenuManager : MenuManager
             scrollerContents[i].transform.parent.GetComponentInParent<ScrollRect>().horizontalNormalizedPosition = 0;
         
             // Instantiate each node in the current scrollers' group
-            foreach (var next_node in nodes.Select(Instantiate))
+            if (i == 0)
             {
-                next_node.transform.SetParent(grid.transform, false);
+                foreach (var next_node in nodes.Select(Instantiate))
+                {
+                    next_node.transform.SetParent(grid.transform, false);
+                }
             }
         }
     }

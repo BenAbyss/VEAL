@@ -76,8 +76,8 @@ public class NodeSettingsMenuManager : MenuManager
         }
     }
     
-    
 
+    
     /// <summary>
     /// Method <c>ChangeNode</c> changes the node to the new node object.
     /// <param name="id_selected">The id of the selected node.</param>

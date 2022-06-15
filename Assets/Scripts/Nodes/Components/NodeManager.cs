@@ -7,6 +7,7 @@ using UnityEngine;
 public class NodeManager : MonoBehaviour
 {
     public static event Action<Midpoint> MidpointCreated;
+    public static event Action<GameObject, string> SaveNode;
     [SerializeField] private GameObject midpointPrefab;
     private GameObject _selectedNode;
 
@@ -56,6 +57,16 @@ public class NodeManager : MonoBehaviour
     private void SetSelectedNode(int id_selected, Vector3 new_pos, GameObject node)
     {
         _selectedNode = node;
+    }
+
+
+
+    /// <summary>
+    /// Method <c>SaveSelectedNode</c> saves the currently selected node.
+    /// </summary>
+    public void SaveSelectedNode()
+    {
+        SaveNode?.Invoke(_selectedNode, _selectedNode.GetComponent<BasicNode>().name);
     }
 
 

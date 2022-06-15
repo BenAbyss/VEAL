@@ -24,8 +24,18 @@ public class SaveSystem : MonoBehaviour
         }
         catch (FileNotFoundException) { }
     }
-    
-    
+
+
+
+    /// <summary>
+    /// Method <c>NewFilePath</c> gets a unique and valid file name for within a path from a given name.
+    /// <param name="name">The base name of the file.</param>
+    /// <returns>The total path for the file.</returns>
+    /// </summary>
+    protected string NewFilePath(string name)
+    {
+        return ToPath(ValidName(name));
+    }
     
     /// <summary>
     /// Method <c>ValidName</c> gets a valid file name from a given name, by adding an appropriate counter suffix.
@@ -65,7 +75,7 @@ public class SaveSystem : MonoBehaviour
     /// Method <c>SubPath</c> gets the complete persistent data path of the subdirectory.
     /// <returns>The persistent data path of the subdirectory.</returns>
     /// </summary>
-    private string SubPath()
+    protected string SubPath()
     {
         return Path.Combine(Application.persistentDataPath, Path.Combine("SaveFiles", Subdirectory));
     }

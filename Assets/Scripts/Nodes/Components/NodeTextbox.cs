@@ -52,15 +52,18 @@ public class NodeTextbox : NodeConnectedObject
         NodeId = node_id;
 
         // sets the text file to the node id, or 50% if it's a probability node
-        if (Node.GetComponent<InteractiveNode>().GetNodeType() == "Probability Node")
+        if (Node.GetComponent<InteractiveNode>().name == "")
         {
-            _textField.text = "50%";
+            if (Node.GetComponent<InteractiveNode>().GetNodeType() == "Probability Node")
+            {
+                _textField.text = "50%";
+            }
+            else
+            {
+                _textField.text = "Node " + NodeId;
+            }
+            _nodeFunc.SetNodeName(_textField.text);
         }
-        else
-        {
-            _textField.text = "Node " + NodeId;
-        }
-        _nodeFunc.SetNodeName(_textField.text);
     }
 
 

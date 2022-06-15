@@ -1059,6 +1059,7 @@ GameObject:
   - component: {fileID: 7875710595206530552}
   - component: {fileID: 8071177392465810511}
   - component: {fileID: 1088474674}
+  - component: {fileID: 1378171483024906917}
   m_Layer: 5
   m_Name: NodeCreatorMenu
   m_TagString: Untagged
@@ -1112,10 +1113,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transitionTime: 0
-  coreNodes: []
+  coreNodes:
+  - {fileID: 1224517785766820470, guid: 7c2c52afebdb8c5408f6b59a569121e3, type: 3}
+  - {fileID: 1216304590301343279, guid: fbe85d74ff223b64b9dd422f4d80a190, type: 3}
+  - {fileID: 8722358797124962936, guid: ab55e68c89764c44eb4ddf019a3bf57f, type: 3}
+  - {fileID: 8561569712981704872, guid: 8253d9ecadcf6e44f9630d77cd3cccf5, type: 3}
+  - {fileID: 8421752101769231503, guid: 9337a4bf21a1ab345af69a3e43b7dd76, type: 3}
   scrollerContents:
   - {fileID: 1694578391953643164}
   - {fileID: 9052840775468536919}
+  basePanel: {fileID: 8087880578018996040, guid: c92f0ad694280ef4081ac70fddef849c,
+    type: 3}
 --- !u!225 &1088474674
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1128,6 +1136,18 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1378171483024906917
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4432953152654027023}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29b2deb944df4d0889d775422fd80ac2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4849359378635186992
 GameObject:
   m_ObjectHideFlags: 0
