@@ -458,9 +458,6 @@ public class NodeConnector  : NodeConnectedObject
             case var i when -135 < i && i <= -45:
                 pos = "Right";
                 break;
-            //case var i when 135 < i || i <= -135:
-                //pos = "Btm";
-                //break;
             case var i  when 45 < i && i <= 135:
                 pos = "Left";
                 break;
@@ -474,15 +471,17 @@ public class NodeConnector  : NodeConnectedObject
 
     private async void PulseLines(NodeConnectors conn_group)
     {
-        if (conn_group == connectorGroup && _arrowTipRenderer != null)
+        if (_arrowTipRenderer != null && (conn_group == connectorGroup || 
+                                          (connectorGroup.nodeType == "Midpoint" && 
+                                           NodeManager.MidpointPathHitsNode(conn_group.nodeId, this))))
         {
-            _lineRenderer.material = Resources.Load<Material>("Materials/Arrow-Red-Material");
-            _arrowTipRenderer.material = Resources.Load<Material>("Materials/Arrow-Red-Material");
-                
+            _lineRenderer.material.color = new Color(0.82f, 0.15f, 0.15f);
+            _arrowTipRenderer.material.color = new Color(0.82f, 0.15f, 0.15f);
+            
             await Task.Delay(500);
 
-            _lineRenderer.material = Resources.Load<Material>("Materials/Arrow-Material");
-            _arrowTipRenderer.material = Resources.Load<Material>("Materials/Arrow-Material");
+            _lineRenderer.material.color = Color.black;
+            _arrowTipRenderer.material.color = Color.black;
         }
     }
 }

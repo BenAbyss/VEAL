@@ -106,12 +106,7 @@ public class NodeManager : MonoBehaviour
 
         foreach (var origin_group_conn in start_conn.connectorGroup.GetUsedConnectors(false))
         {
-            var origin = FindMidpointPathOrigin(origin_group_conn);
-            if (origin == null) continue;
-            foreach (var conn in origin.GetUsedConnectors(true, false))
-            {
-                nodes_hit = nodes_hit.Concat(FollowMidpointPath(conn)).ToList();
-            }
+            nodes_hit.Add(FindMidpointPathOrigin(origin_group_conn));
         }
 
         return nodes_hit.Contains(node_id);
@@ -120,16 +115,16 @@ public class NodeManager : MonoBehaviour
     /// <summary>
     /// Method <c>FindMidpointPathOrigin</c> find the node origin of a midpoint.
     /// <param name="conn">A connector of the midpoint to traverse from.</param>
-    /// <returns>The connector group the midpoint path originates from.</returns>
+    /// <returns>The id of the node the midpoint path originates from.</returns>
     /// </summary>
-    private static NodeConnectors FindMidpointPathOrigin(NodeConnector conn)
+    private static int FindMidpointPathOrigin(NodeConnector conn)
     {
         while (true)
         {
             var node_conn = conn.GetConnectionFrom();
-            if (node_conn == null) return null;
-            var midpt = node_conn.connectorGroup;
-            if (midpt.nodeType != "Midpoint") return midpt;
+            if (node_conn == null) return -1;
+            var node_group = node_conn.connectorGroup;
+            if (node_group.nodeType != "Midpoint") return node_group.nodeId;
             conn = node_conn;
         }
     }
@@ -150,17 +145,17 @@ public class NodeManager : MonoBehaviour
 
         if (node_conn != null)
         {
-            var midpt = node_conn.connectorGroup;
-            if (midpt.nodeType == "Midpoint")
+            var node_group = node_conn.connectorGroup;
+            if (node_group.nodeType == "Midpoint")
             {
-                foreach (var output in midpt.GetUsedConnectors(true, false))
+                foreach (var output in node_group.GetUsedConnectors(true, false))
                 {
                     nodes = FollowMidpointPath(output, nodes);
                 }
             }
             else
             {
-                nodes.Add(midpt.nodeId);
+                nodes.Add(node_group.nodeId);
             }
         }
         return nodes;

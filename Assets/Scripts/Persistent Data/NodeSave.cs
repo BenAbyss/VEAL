@@ -48,7 +48,7 @@ public class NodeSave : SaveSystem
         {
             using (var file_reader = new StreamReader(file))
             {
-                var node = LoadNode(file_reader.ReadLine());
+                var node = LoadNode(file_reader.ReadLine(), true);
                 panels.Add(_creatorManager.BuildSavedNodePanel(node));
                 nodes_made++;
             }
@@ -89,7 +89,7 @@ public class NodeSave : SaveSystem
     /// Method <c>LoadNode</c> loads and instantiates a given node from serialization.
     /// <param name="json_str">The JSON string to deserialize from.</param>
     /// </summary>
-    protected static GameObject LoadNode(string json_str)
+    protected GameObject LoadNode(string json_str, bool as_prefab=false)
     {
         var node_json = JsonUtility.FromJson<SerializedNode>(json_str);
         var prefab_name = "Prefabs/Nodes/" +
@@ -105,10 +105,18 @@ public class NodeSave : SaveSystem
             node.transform.Find("ConnectableNode").Find("MainNode").GetComponent<SpriteRenderer>() : 
             node.transform.Find("Midpoint").GetComponent<SpriteRenderer>();
         sprite_renderer.color = node_json.colour;
-        
-        var prefab = PrefabUtility.SaveAsPrefabAsset(node, "Assets/Temporary/"+node_obj.name+".prefab");
-        Destroy(node);
 
+
+        if (!as_prefab) return node;
+        
+        // delete the node and create a prefab in it's place
+        var node_name = ValidName("Node");
+        if (!string.IsNullOrEmpty(node_obj.name))
+        {
+            node_name = node_obj.name;
+        }
+        var prefab = PrefabUtility.SaveAsPrefabAsset(node, "Assets/Temporary/"+node_name+".prefab");
+        Destroy(node);
         return prefab;
     }
 }

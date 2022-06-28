@@ -29,36 +29,36 @@ public class SaveSystem : MonoBehaviour
 
     /// <summary>
     /// Method <c>NewFilePath</c> gets a unique and valid file name for within a path from a given name.
-    /// <param name="name">The base name of the file.</param>
+    /// <param name="filename">The base name of the file.</param>
     /// <returns>The total path for the file.</returns>
     /// </summary>
-    protected string NewFilePath(string name)
+    protected string NewFilePath(string filename)
     {
-        return ToPath(ValidName(name));
+        return ToPath(ValidName(filename));
     }
     
     /// <summary>
     /// Method <c>ValidName</c> gets a valid file name from a given name, by adding an appropriate counter suffix.
-    /// <param name="name">The base name of the file.</param>
+    /// <param name="filename">The base name of the file.</param>
     /// <returns>The adjusted valid name for the file.</returns>
     /// </summary>
-    protected string ValidName(string name)
+    protected string ValidName(string filename)
     {
-        name = name.Trim();
+        filename = filename.Trim();
         var files = new List<string>(Directory.GetFiles(SubPath(), @"*.sav"));
 
-        if (files.Contains(name))
+        if (files.Contains(filename))
         {
             var suffix_val = 1;
-            while (files.Contains(name + " (" + suffix_val + ")"))
+            while (files.Contains(filename + " (" + suffix_val + ")"))
             {
                 suffix_val++;
             }
 
-            name = name + " (" + suffix_val + ")";
+            filename = filename + " (" + suffix_val + ")";
         }
 
-        return name;
+        return filename;
     }
     
     /// <summary>
