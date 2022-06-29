@@ -64,6 +64,12 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
     /// </summary>
     public override void SetNodeName(string new_name)
     {
+        // update the internals name if it's a generated name
+        if (_internalsName == null || _internalsName == name + " Internals")
+        {
+            _internalsName = new_name + " Internals";
+        }
+        
         base.SetNodeName(new_name);
         _nodeTextbox.UpdateValueToName(new_name);
     }

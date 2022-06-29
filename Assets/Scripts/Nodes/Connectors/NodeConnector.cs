@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -469,19 +470,17 @@ public class NodeConnector  : NodeConnectedObject
         FormConnectionRecipient(midpt.GetConnector(pos + "Conn"));
     }
 
-    private async void PulseLines(NodeConnectors conn_group)
+    private void PulseLines(NodeConnectors conn_group)
     {
         if (_arrowTipRenderer != null && (conn_group == connectorGroup || 
                                           (connectorGroup.nodeType == "Midpoint" && 
                                            NodeManager.MidpointPathHitsNode(conn_group.nodeId, this))))
         {
-            _lineRenderer.material.color = new Color(0.82f, 0.15f, 0.15f);
-            _arrowTipRenderer.material.color = new Color(0.82f, 0.15f, 0.15f);
-            
-            await Task.Delay(500);
-
-            _lineRenderer.material.color = Color.black;
-            _arrowTipRenderer.material.color = Color.black;
+            DOTween.Sequence()
+                .Append(_lineRenderer.material.DOColor(new Color(0.82f, 0.15f, 0.15f), 1f))
+                .Join(_arrowTipRenderer.material.DOColor(new Color(0.82f, 0.15f, 0.15f), 1f))
+                .Append(_lineRenderer.material.DOColor(Color.black, 1f))
+                .Join(_arrowTipRenderer.material.DOColor(Color.black, 1f));
         }
     }
 }

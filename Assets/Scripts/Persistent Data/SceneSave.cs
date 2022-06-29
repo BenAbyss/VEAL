@@ -9,10 +9,41 @@ using UnityEngine;
 public class SceneSave : NodeSave
 {
     protected override string Subdirectory => "Scenes";
-
-    public void SaveAndDelete()
+    public static event Action<string> SceneChanged;
+    
+    private string _currentScene = "MainScene"; // replaced by save file name if it's a saved project
+    private Stack<string> _previousScenes = new Stack<string>();
+    
+    /// <summary>
+    /// Method <c>OnEnable</c> sets reactionary method calls to invoked events.
+    /// </summary>
+    protected new void OnEnable()
     {
-        SaveNodes("testing");
+        base.OnEnable();
+        InteractiveNodeSpecsPanelManager.LoadInternals += SwapScenes;
+        InternalsMenuManager.PreviousScene += PreviousScene;
+    }
+
+    /// <summary>
+    /// Method <c>OnDisable</c> disables reactionary method calls to invoked events.
+    /// </summary>
+    protected new void OnDisable()
+    {
+        base.OnDisable();
+        InteractiveNodeSpecsPanelManager.LoadInternals -= SwapScenes;
+        InternalsMenuManager.PreviousScene -= PreviousScene;
+    }
+
+
+
+    /// <summary>
+    /// Method <c>SwapScenes</c> saves and destroys the current scene, before loading the new scene.
+    /// <param name="filename">The name of the new scene to load.</param>
+    /// </summary>
+    private void SwapScenes(string filename)
+    {
+        SaveNodes(_currentScene);
+        // destroy all currently active nodes
         foreach (var node in FindObjectsOfType<BasicNode>())
         {
             var full_obj = node.transform.parent;
@@ -22,12 +53,22 @@ public class SceneSave : NodeSave
             }
             Destroy(full_obj.gameObject);
         }
+
+        _previousScenes.Push(_currentScene);
+        _currentScene = filename;
+        LoadNodes(_currentScene);
+        SceneChanged?.Invoke(filename);
     }
 
-    public void Load()
+    /// <summary>
+    /// Method <c>PreviousScene</c> saves and destroys the current scene, before loading the previous scene.
+    /// </summary>
+    private void PreviousScene()
     {
-        LoadNodes("testing");
+        SwapScenes(_previousScenes.Pop());
     }
+    
+    
     
     /// <summary>
     /// Method <c>SaveNodes</c> serializes and saves all currently active nodes.

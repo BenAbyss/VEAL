@@ -13,9 +13,9 @@ public class NodeSettingsMenuManager : MenuManager
     [SerializeField] private Image colourSample;
     [SerializeField] private GameObject specDefaultSegment;
 
-    private InteractiveNode node;
-    private GameObject ActiveSpecsPanel;
-    private Dictionary<string, GameObject> specsPanels;
+    private InteractiveNode _node;
+    private GameObject _activeSpecsPanel;
+    private Dictionary<string, GameObject> _specsPanels;
     
     private Slider[] _colourSliders;
     private TextMeshProUGUI[] _colourValues;
@@ -44,6 +44,7 @@ public class NodeSettingsMenuManager : MenuManager
         base.OnEnable();
         NodeSideMenu.Editing += ToggleActive;
         InteractiveNode.NodeSelected += ChangeNode;
+        InteractiveNodeSpecsPanelManager.LoadInternals += ToggleActive;
     }
 
     /// <summary>
@@ -54,6 +55,7 @@ public class NodeSettingsMenuManager : MenuManager
         base.OnDisable();
         NodeSideMenu.Editing -= ToggleActive;
         InteractiveNode.NodeSelected -= ChangeNode;
+        InteractiveNodeSpecsPanelManager.LoadInternals -= ToggleActive;
     }
 
     /// <summary>
@@ -61,7 +63,7 @@ public class NodeSettingsMenuManager : MenuManager
     /// </summary>
     private void SetupSpecsPanels()
     {
-        specsPanels = new Dictionary<string, GameObject>();
+        _specsPanels = new Dictionary<string, GameObject>();
         GameObject panel;
         GameObject prefab;
         
@@ -72,7 +74,7 @@ public class NodeSettingsMenuManager : MenuManager
             panel = Instantiate(prefab, transform, true);
             panel.transform.position = specDefaultSegment.transform.position;
             panel.SetActive(false);
-            specsPanels[node_type] = panel;
+            _specsPanels[node_type] = panel;
         }
     }
     
@@ -86,9 +88,9 @@ public class NodeSettingsMenuManager : MenuManager
     /// </summary>
     private void ChangeNode(int id_selected, Vector3 new_pos, GameObject game_obj)
     {
-        if (node == null) return;
+        if (_node == null) return;
         
-        if (id_selected != node.nodeId)
+        if (id_selected != _node.nodeId)
         {
             ChangeNode(game_obj.GetComponent<InteractiveNode>());
         }
@@ -100,12 +102,22 @@ public class NodeSettingsMenuManager : MenuManager
     /// </summary>
     private void ChangeNode(InteractiveNode new_node)
     {
-        node = new_node;
-        UpdateColour(node.GetComponent<SpriteRenderer>().color);
-        GameObject.Find("NodeTitle").GetComponent<TextMeshProUGUI>().text = node.name;
+        _node = new_node;
+        UpdateColour(_node.GetComponent<SpriteRenderer>().color);
+        GameObject.Find("NodeTitle").GetComponent<TextMeshProUGUI>().text = _node.name;
         LoadSpecificPanel();
+        _activeSpecsPanel.GetComponent<NodeSpecsPanelManager>().ChangeNode(new_node);
     }
 
+    /// <summary>
+    /// Method <c>ToggleActive</c> toggles the active state of the menu.
+    /// <param name="internals_name">The name of the internals the scene is entering.</param>
+    /// </summary>
+    private void ToggleActive(string internals_name)
+    {
+        base.ToggleActive();
+    }
+    
     /// <summary>
     /// Method <c>ToggleActive</c> toggles the active state of the menu.
     /// <param name="new_node">The node the menu is working for.</param>
@@ -121,12 +133,12 @@ public class NodeSettingsMenuManager : MenuManager
     /// </summary>
     private void LoadSpecificPanel()
     {
-        if (ActiveSpecsPanel != null)
+        if (_activeSpecsPanel != null)
         {
-            ActiveSpecsPanel.SetActive(false);
+            _activeSpecsPanel.SetActive(false);
         }
-        ActiveSpecsPanel = specsPanels[node.GetNodeType().Split(' ')[0]];
-        ActiveSpecsPanel.SetActive(true);
+        _activeSpecsPanel = _specsPanels[_node.GetNodeType().Split(' ')[0]];
+        _activeSpecsPanel.SetActive(true);
     }
 
 
@@ -136,7 +148,7 @@ public class NodeSettingsMenuManager : MenuManager
     /// </summary>
     public void ApplyColour()
     {
-        node.ChangeColour(colourSample.color);
+        _node.ChangeColour(colourSample.color);
     }
     
     /// <summary>
