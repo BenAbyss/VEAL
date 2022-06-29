@@ -32,6 +32,7 @@ public class NodeCreatorMenuManager : MenuManager
     protected new void OnEnable()
     {
         NodeSave.NewSavedNode += UpdateCustomNodes;
+        InteractiveNodeSpecsPanelManager.HideMenus += CloseMenu;
     }
 
     /// <summary>
@@ -40,6 +41,7 @@ public class NodeCreatorMenuManager : MenuManager
     protected new void OnDisable()
     {
         NodeSave.NewSavedNode -= UpdateCustomNodes;
+        InteractiveNodeSpecsPanelManager.HideMenus -= CloseMenu;
     }
 
 

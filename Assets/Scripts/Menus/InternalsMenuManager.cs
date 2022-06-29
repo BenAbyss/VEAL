@@ -30,15 +30,26 @@ public class InternalsMenuManager : MenuManager
     
     
     
-    private void UpdateText(string new_text)
+    /// <summary>
+    /// Method <c>UpdateText</c> updates the title text, and makes it visible if it's an internal scene still.
+    /// <param name="new_text">The new title to show.</param>
+    /// <param name="is_internal">Whether the scene is internal.</param>
+    /// </summary>
+    private void UpdateText(string new_text, bool is_internal)
     {
         text.text = new_text;
-        ChangeActivity(true);
+        if (is_internal)
+        {
+            ChangeActivity(true);
+        }
     }
 
+    /// <summary>
+    /// Method <c>Return</c> returns to the previous scene.
+    /// </summary>
     public void Return()
     {
-        PreviousScene?.Invoke();
         ChangeActivity(false);
+        PreviousScene?.Invoke();
     }
 }

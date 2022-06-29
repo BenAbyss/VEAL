@@ -44,7 +44,7 @@ public class NodeSettingsMenuManager : MenuManager
         base.OnEnable();
         NodeSideMenu.Editing += ToggleActive;
         InteractiveNode.NodeSelected += ChangeNode;
-        InteractiveNodeSpecsPanelManager.LoadInternals += ToggleActive;
+        InteractiveNodeSpecsPanelManager.HideMenus += CloseMenu;
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class NodeSettingsMenuManager : MenuManager
         base.OnDisable();
         NodeSideMenu.Editing -= ToggleActive;
         InteractiveNode.NodeSelected -= ChangeNode;
-        InteractiveNodeSpecsPanelManager.LoadInternals -= ToggleActive;
+        InteractiveNodeSpecsPanelManager.HideMenus -= CloseMenu;
     }
 
     /// <summary>
@@ -107,15 +107,6 @@ public class NodeSettingsMenuManager : MenuManager
         GameObject.Find("NodeTitle").GetComponent<TextMeshProUGUI>().text = _node.name;
         LoadSpecificPanel();
         _activeSpecsPanel.GetComponent<NodeSpecsPanelManager>().ChangeNode(new_node);
-    }
-
-    /// <summary>
-    /// Method <c>ToggleActive</c> toggles the active state of the menu.
-    /// <param name="internals_name">The name of the internals the scene is entering.</param>
-    /// </summary>
-    private void ToggleActive(string internals_name)
-    {
-        base.ToggleActive();
     }
     
     /// <summary>

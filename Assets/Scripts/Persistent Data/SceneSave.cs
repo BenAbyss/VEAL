@@ -9,7 +9,7 @@ using UnityEngine;
 public class SceneSave : NodeSave
 {
     protected override string Subdirectory => "Scenes";
-    public static event Action<string> SceneChanged;
+    public static event Action<string, bool> SceneChanged;
     
     private string _currentScene = "MainScene"; // replaced by save file name if it's a saved project
     private Stack<string> _previousScenes = new Stack<string>();
@@ -20,7 +20,7 @@ public class SceneSave : NodeSave
     protected new void OnEnable()
     {
         base.OnEnable();
-        InteractiveNodeSpecsPanelManager.LoadInternals += SwapScenes;
+        InteractiveNodeSpecsPanelManager.LoadInternals += LoadInternals;
         InternalsMenuManager.PreviousScene += PreviousScene;
     }
 
@@ -30,17 +30,26 @@ public class SceneSave : NodeSave
     protected new void OnDisable()
     {
         base.OnDisable();
-        InteractiveNodeSpecsPanelManager.LoadInternals -= SwapScenes;
+        InteractiveNodeSpecsPanelManager.LoadInternals -= LoadInternals;
         InternalsMenuManager.PreviousScene -= PreviousScene;
     }
 
+    /// <summary>
+    /// Method <c>LoadInternals</c> saves and destroys the current scene, before loading the new scene.
+    /// <param name="filename">The name of the new scene to load.</param>
+    /// </summary>
+    private void LoadInternals(string filename)
+    {
+        SwapScenes(filename, true);
+    }
 
 
     /// <summary>
     /// Method <c>SwapScenes</c> saves and destroys the current scene, before loading the new scene.
     /// <param name="filename">The name of the new scene to load.</param>
+    /// <param name="add_scene">Whether to add this new scene to the stack of scenes.</param>
     /// </summary>
-    private void SwapScenes(string filename)
+    private void SwapScenes(string filename, bool add_scene)
     {
         SaveNodes(_currentScene);
         // destroy all currently active nodes
@@ -54,10 +63,13 @@ public class SceneSave : NodeSave
             Destroy(full_obj.gameObject);
         }
 
-        _previousScenes.Push(_currentScene);
+        if (add_scene)
+        {
+            _previousScenes.Push(_currentScene);
+        }
         _currentScene = filename;
         LoadNodes(_currentScene);
-        SceneChanged?.Invoke(filename);
+        SceneChanged?.Invoke(filename, _previousScenes.Count != 0);
     }
 
     /// <summary>
@@ -65,7 +77,7 @@ public class SceneSave : NodeSave
     /// </summary>
     private void PreviousScene()
     {
-        SwapScenes(_previousScenes.Pop());
+        SwapScenes(_previousScenes.Pop(), false);
     }
     
     
