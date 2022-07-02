@@ -140,7 +140,7 @@ public class InteractiveNode : BasicNode, IBeginDragHandler, IEndDragHandler, IP
     /// <param name="new_pos">The new position of the selected node.</param>
     /// <param name="game_obj">The selected node game object.</param>
     /// </summary>
-    private new void NewNodeSelected(int id_selected, Vector3 new_pos=default, GameObject game_obj=default)
+    protected new void NewNodeSelected(int id_selected, Vector3 new_pos=default, GameObject game_obj=default)
     {
         if (nodeId != id_selected)
         {

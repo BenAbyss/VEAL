@@ -30,7 +30,6 @@ public class NodeConnector  : NodeConnectedObject
     private SpriteRenderer _renderer;
     private Button _button;
     private bool _connectingNode;
-    private Camera _camera;
 
     /// <summary>
     /// Method <c>Awake</c> sets up all the appropriate components.
@@ -39,7 +38,6 @@ public class NodeConnector  : NodeConnectedObject
     {
         _renderer = GetComponent<SpriteRenderer>();
         _button = GetComponent<Button>();
-        _camera = Camera.main;
     }
     
     /// <summary>
@@ -327,7 +325,7 @@ public class NodeConnector  : NodeConnectedObject
     /// z-axis with constant thickness.
     private Vector3 GetCoordinates()
     {
-        var ray = _camera.ScreenPointToRay(Mouse.current.position.ReadValue());
+        var ray = Camera.ScreenPointToRay(Mouse.current.position.ReadValue());
         var plane = new Plane(Vector3.forward, new Vector3(0, 0, -2));
         plane.Raycast(ray, out var distance);
         return ray.GetPoint(distance);

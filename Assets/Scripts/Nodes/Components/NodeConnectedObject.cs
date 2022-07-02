@@ -3,6 +3,15 @@
 public class NodeConnectedObject : MonoBehaviour
 {
     protected Vector3 _distFromNode;
+    protected Camera Camera;
+
+    /// <summary>
+    /// Method <c>Start</c> sets up needed components.
+    /// </summary>
+    public void Start()
+    {
+        Camera = Camera.main;
+    }
 
     /// <summary>
     /// Method <c>OnEnable</c> sets reactionary method calls to invoked events.

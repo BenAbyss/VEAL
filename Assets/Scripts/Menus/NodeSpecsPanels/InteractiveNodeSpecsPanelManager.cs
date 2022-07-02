@@ -6,6 +6,7 @@ public class InteractiveNodeSpecsPanelManager : NodeSpecsPanelManager
 {
     public static event Action HideMenus;
     public static event Action<string> LoadInternals;
+    private InteractiveNode Node;
     
     public override void ChangeNode(InteractiveNode new_node)
     {

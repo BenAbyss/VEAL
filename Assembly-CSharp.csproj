@@ -63,6 +63,7 @@
      <Compile Include="Assets\Scripts\Menus\MenuManager.cs" />
      <Compile Include="Assets\Scripts\Menus\NodeCreatorMenuManager.cs" />
      <Compile Include="Assets\Scripts\Menus\NodeSettingsMenuManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\NodeSpecsPanels\DecisionNodePathNameSubsection.cs" />
      <Compile Include="Assets\Scripts\Menus\NodeSpecsPanels\DecisionNodeSpecsPanelManager.cs" />
      <Compile Include="Assets\Scripts\Menus\NodeSpecsPanels\InteractiveNodeSpecsPanelManager.cs" />
      <Compile Include="Assets\Scripts\Menus\NodeSpecsPanels\NodeSpecsPanelManager.cs" />
