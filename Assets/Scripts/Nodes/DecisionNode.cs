@@ -9,10 +9,10 @@ public class DecisionNode : InteractiveNode
     protected override int OutputLimit => 2;
     
     private GameObject _textContainer;
-    private int _pathsTaken;
     private List<string> _pathNames;
     private List<Vector2> _distsFromNode;
     private Camera _camera;
+    private int _pathsTaken;
 
     /// <summary>
     /// Method <c>SetPathsTaken</c> sets up all needed variables.
@@ -62,37 +62,50 @@ public class DecisionNode : InteractiveNode
         
         for (var i = 0; i < Math.Min(NodeConnectors.GetOutputCount(), _pathNames.Count); i++)
         {
-            var holder = Instantiate(new GameObject(), _textContainer.transform);
-            var text = holder.AddComponent<TextMeshProUGUI>();
-            text.fontSize = 30;
-            text.color = GetComponent<SpriteRenderer>().color;
-            text.text = _pathNames[i];
-            text.transform.position = locs[i];
-            _distsFromNode.Add(_camera.ScreenToWorldPoint(locs[i]) - transform.position);
+            if (locs[i].Item2 != null)
+            {
+                locs[i].Item2.LabelLine(locs[i].Item1, _pathNames[i]);
+            }
+            else
+            {
+                var holder = Instantiate(new GameObject(), _textContainer.transform);
+                var text = holder.AddComponent<TextMeshProUGUI>();
+                text.raycastTarget = false;
+                text.fontSize = 30;
+                text.color = GetComponent<SpriteRenderer>().color;
+                text.text = _pathNames[i];
+                text.transform.position = locs[i].Item1;
+                _distsFromNode.Add(_camera.ScreenToWorldPoint(locs[i].Item1) - transform.position);
+            }
         }
     }
 
     /// <summary>
     /// Method <c>GetLineStarts</c> Gets the position for a name, as the edge of the lines start.
     /// </summary>
-    private List<Vector2> GetLineStarts()
+    private List<(Vector2, Midpoint)> GetLineStarts()
     {
-        var locs = new List<Vector2>();
+        var locs = new List<(Vector2, Midpoint)>();
+        var counter = 0;
         foreach (var node in NodeConnectors.GetUsedConnectors(true, false))
         {
             if (node.GetConnectionTo().connectorGroup.nodeType == "Midpoint")
             {
-                
+                Midpoint node_code = node.GetConnectionTo().transform.parent.GetComponentInChildren<Midpoint>();
+                var names = _pathNames.GetRange(counter, 
+                    Math.Min(node_code.GetNodeConnectors().GetOutputCount(), _pathNames.Count - counter));
+                locs.AddRange(node_code.GetLineStarts(names));
             }
             else
             {
-                locs.Add(AdjustLineStartFromConn(node));
+                locs.Add((AdjustLineStartFromConn(node), null));
+                counter++;
             }
         }
 
         return locs;
     }
-
+    
     /// <summary>
     /// Method <c>AdjustLineStartFromConn</c> adjusts the position for a lines text based on it's node position.
     /// <param name="conn">The node connector for the line.</param>
@@ -102,7 +115,7 @@ public class DecisionNode : InteractiveNode
         Vector2 pos = conn.transform.position;
         var adjust = new Dictionary<string, Vector2>()
         {
-            {"Top", Vector2.up}, {"Right", Vector2.right},
+            {"Top", Vector2.up}, {"Right", Vector2.right*2},
             {"Btm", Vector2.down}, {"Left", Vector2.left}
         };
         var adjust_outcome = adjust[conn.name.Replace("Conn", "")];
@@ -110,7 +123,7 @@ public class DecisionNode : InteractiveNode
         
         return _camera.WorldToScreenPoint(pos);
     }
-
+    
     /// <summary>
     /// Method <c>MoveText</c> moves the line texts with the node.
     /// <param name="node_id">The ID of the moving node.</param>
@@ -134,8 +147,6 @@ public class DecisionNode : InteractiveNode
             counter++;
         }
     }
-    
-    
     
     /// <summary>
     /// Method <c>ChangeColour</c> changes the colour of the nodes internals.
