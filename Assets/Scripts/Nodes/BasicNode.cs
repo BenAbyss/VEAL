@@ -146,7 +146,7 @@ public class BasicNode: MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDrag
     /// Method <c>ChangeColour</c> changes the colour of the nodes internals.
     /// <param name="colour">The colour value to set it to.</param>
     /// </summary>
-    public void ChangeColour(Color colour)
+    public virtual void ChangeColour(Color colour)
     {
         GetComponent<SpriteRenderer>().color = colour;
     }

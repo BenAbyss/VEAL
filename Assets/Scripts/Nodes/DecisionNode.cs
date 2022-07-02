@@ -50,7 +50,7 @@ public class DecisionNode : InteractiveNode
     /// <summary>
     /// Method <c>LabelLines</c> adds labels for each line based on their allocated name.
     /// </summary>
-    public void LabelLines()
+    private void LabelLines()
     {
         var locs = GetLineStarts();
         _distsFromNode = new List<Vector2>();
@@ -65,7 +65,7 @@ public class DecisionNode : InteractiveNode
             var holder = Instantiate(new GameObject(), _textContainer.transform);
             var text = holder.AddComponent<TextMeshProUGUI>();
             text.fontSize = 30;
-            text.color = Color.black;
+            text.color = GetComponent<SpriteRenderer>().color;
             text.text = _pathNames[i];
             text.transform.position = locs[i];
             _distsFromNode.Add(_camera.ScreenToWorldPoint(locs[i]) - transform.position);
@@ -132,6 +132,21 @@ public class DecisionNode : InteractiveNode
             text.sizeDelta =
                 _camera.orthographicSize * transform.lossyScale;
             counter++;
+        }
+    }
+    
+    
+    
+    /// <summary>
+    /// Method <c>ChangeColour</c> changes the colour of the nodes internals.
+    /// <param name="colour">The colour value to set it to.</param>
+    /// </summary>
+    public override void ChangeColour(Color colour)
+    {
+        GetComponent<SpriteRenderer>().color = colour;
+        foreach (Transform trans in _textContainer.transform)
+        {
+            trans.GetComponent<TextMeshProUGUI>().color = colour;
         }
     }
 
