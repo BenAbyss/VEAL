@@ -4,41 +4,11 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 /// <summary>
-/// Class <c>SerializableDictStringToGamObject</c> allows for serializable entries of string-to-GameObject dictionaries.
+/// Class <c>SerializableDictStringToGamObject</c> allows for serializable entries of string-to-Node dictionaries.
 /// </summary>
 [Serializable]
-public class SerializeNodeConnectorsDict : Dictionary<string, GameObject>, ISerializationCallbackReceiver
+public class SerializeNodeConnectorsDict : SerializableStringGameObjDict
 {
-    [SerializeField] private string[] keys = new string[8];
-    [SerializeField] private GameObject[] values = new GameObject[8];
-
-    /// <summary>
-    /// Method <c>OnBeforeSerialize</c> stores the current dictionary into lists.
-    /// </summary>
-    public void OnBeforeSerialize()
-    {
-        int counter = 0;
-        foreach(var pair in this)
-        {
-            keys[counter] = pair.Key;
-            values[counter] = pair.Value;
-            counter++;
-        }
-    }
-
-    /// <summary>
-    /// Method <c>OnAfterDeserialize</c> fills the dictionary with the provided serialized lists.
-    /// </summary>
-    public void OnAfterDeserialize()
-    {
-        Clear();
-        
-        for (int i = 0; i < keys.Length; i++)
-        {
-            this[keys[i]] = values[i];
-        }
-    }
-
     /// <summary>
     /// Method <c>GetNodeFunction</c> gets the functional NodeConnector object of a given connector.
     /// <param name="key">The key to get the function of.</param>
@@ -55,8 +25,8 @@ public class SerializeNodeConnectorsDict : Dictionary<string, GameObject>, ISeri
     /// </summary>
     public NodeConnector[] GetNodeFunctions()
     {
-        NodeConnector[] functions = new NodeConnector[keys.Length];
-        int counter = 0;
+        var functions = new NodeConnector[keys.Length];
+        var counter = 0;
         foreach (var value in values)
         {
             functions[counter] = value.GetComponent<NodeConnector>();

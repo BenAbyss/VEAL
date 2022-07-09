@@ -69,7 +69,7 @@ public class NodeSettingsMenuManager : MenuManager
         
         foreach (var node_type in new []{"Interactive", "Decision", "Probability", "Loop", "AND"})
         {
-            prefab = Resources.Load($"Prefabs/Node Settings/Node Settings Panels/{node_type}SpecsPanel") 
+            prefab = Resources.Load($"Prefabs/UI/Node Settings/Node Settings Panels/{node_type}SpecsPanel") 
                 as GameObject;
             panel = Instantiate(prefab, transform, true);
             panel.transform.position = specDefaultSegment.transform.position;

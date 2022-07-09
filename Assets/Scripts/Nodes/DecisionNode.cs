@@ -6,7 +6,6 @@ using UnityEngine;
 public class DecisionNode : InteractiveNode
 {
     protected override string NodeType => "Decision Node";
-    protected override int OutputLimit => 2;
     
     private GameObject _textContainer;
     private List<string> _pathNames;

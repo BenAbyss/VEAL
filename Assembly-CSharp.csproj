@@ -59,14 +59,16 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\InputManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\Chromosome Creation\ChromosomeCreationManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\Chromosome Creation\VariableDataPiece.cs" />
      <Compile Include="Assets\Scripts\Menus\InternalsMenuManager.cs" />
      <Compile Include="Assets\Scripts\Menus\MenuManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\Node Specs Panels\DecisionNodePathNameSubsection.cs" />
+     <Compile Include="Assets\Scripts\Menus\Node Specs Panels\DecisionNodeSpecsPanelManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\Node Specs Panels\InteractiveNodeSpecsPanelManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\Node Specs Panels\NodeSpecsPanelManager.cs" />
      <Compile Include="Assets\Scripts\Menus\NodeCreatorMenuManager.cs" />
      <Compile Include="Assets\Scripts\Menus\NodeSettingsMenuManager.cs" />
-     <Compile Include="Assets\Scripts\Menus\NodeSpecsPanels\DecisionNodePathNameSubsection.cs" />
-     <Compile Include="Assets\Scripts\Menus\NodeSpecsPanels\DecisionNodeSpecsPanelManager.cs" />
-     <Compile Include="Assets\Scripts\Menus\NodeSpecsPanels\InteractiveNodeSpecsPanelManager.cs" />
-     <Compile Include="Assets\Scripts\Menus\NodeSpecsPanels\NodeSpecsPanelManager.cs" />
      <Compile Include="Assets\Scripts\NodeCreatorBtn.cs" />
      <Compile Include="Assets\Scripts\Nodes\ANDGateNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\BasicNode.cs" />
@@ -81,12 +83,14 @@
      <Compile Include="Assets\Scripts\Nodes\InteractiveNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\LoopNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\Midpoint.cs" />
+     <Compile Include="Assets\Scripts\Nodes\MutateByNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\ProbabilityNode.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\NodeSave.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SaveSystem.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SceneSave.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SerializedConnection.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SerializedNode.cs" />
+     <Compile Include="Assets\Scripts\SerializableStringGameObjDict.cs" />
      <Compile Include="Assets\Scripts\Spinner.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
