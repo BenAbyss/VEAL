@@ -12,10 +12,11 @@ public class ChromosomeCreationManager : MenuManager
     [SerializeField] private SerializableStringGameObjDict dataPrefabs;
     [SerializeField] private SerializableStringGameObjDict scrollers;
     [SerializeField] private string[] panelOrder;
-
+    
+    public static int MutationCount;
+    public static int CrossoverCount;
+    private GameObject _backBtn;
     private (string, GameObject) _activePanel;
-
-
 
     /// <summary>
     /// Method <c>Start</c> sets up the manager.
@@ -23,6 +24,10 @@ public class ChromosomeCreationManager : MenuManager
     public void Start()
     {
         _activePanel = ("Fitness", panels["Fitness"]);
+        MutationCount = 1;
+        CrossoverCount = 1;
+        _backBtn = GameObject.Find("InternalsBackBtn");
+        _backBtn.SetActive(false);
     }
     
     
@@ -58,6 +63,7 @@ public class ChromosomeCreationManager : MenuManager
     /// </summary>
     public void AddMutationPrefab()
     {
+        MutationCount++;
         AddPrefab(scrollers["Mutation"], dataPrefabs["Mutation"]);
     }
 
@@ -67,6 +73,7 @@ public class ChromosomeCreationManager : MenuManager
     /// </summary>
     public void AddCrossoverPrefab()
     {
+        CrossoverCount++;
         AddPrefab(scrollers["Crossover"], dataPrefabs["Crossover"]);
     }
 
