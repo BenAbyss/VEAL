@@ -12,10 +12,12 @@ public class ChromosomeCreationManager : MenuManager
     [SerializeField] private SerializableStringGameObjDict dataPrefabs;
     [SerializeField] private SerializableStringGameObjDict scrollers;
     [SerializeField] private string[] panelOrder;
+    [SerializeField] private GameObject backBtn;
+    [SerializeField] private GameObject limitsMenu;
     
     public static int MutationCount;
     public static int CrossoverCount;
-    private GameObject _backBtn;
+    private LimitsSubmenuManager _limitsManager;
     private (string, GameObject) _activePanel;
 
     /// <summary>
@@ -26,8 +28,9 @@ public class ChromosomeCreationManager : MenuManager
         _activePanel = ("Fitness", panels["Fitness"]);
         MutationCount = 1;
         CrossoverCount = 1;
-        _backBtn = GameObject.Find("InternalsBackBtn");
-        _backBtn.SetActive(false);
+        _limitsManager = limitsMenu.GetComponent<LimitsSubmenuManager>();
+        _limitsManager.CloseMenu();
+        AddVarPrefab();
     }
     
     
@@ -48,6 +51,19 @@ public class ChromosomeCreationManager : MenuManager
         SwapTopPanels(1);
     }
 
+    /// <summary>
+    /// Method <c>OpenLimitsMenu</c> enables and sets up the limits menu.
+    /// <param name="variable">The name of the variable calling this.</param>
+    /// <param name="type">The type of the variable calling this.</param>
+    /// </summary>
+    public void OpenLimitsMenu(string variable, string type)
+    {
+        _limitsManager.ChangeActivity(true);
+        _limitsManager.SetupScene(variable, type);
+    }
+
+    
+    
     /// <summary>
     /// Method <c>AddPrefab</c> extends the scroller size and creates the new prefab for the Variable panel.
     /// This exists for the purpose of button calls.
@@ -107,6 +123,11 @@ public class ChromosomeCreationManager : MenuManager
     {
         var built_prefab = Instantiate(prefab, grid.transform, false);
         addBtns[prefab_name].transform.SetSiblingIndex(child_count);
+
+        if (prefab_name == "Variable")
+        {
+            built_prefab.GetComponent<VariableDataPiece>().SetManager(this);
+        }
     }
     
     /// <summary>

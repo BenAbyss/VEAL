@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class VariableDataPiece : MonoBehaviour
 {
+    private ChromosomeCreationManager _manager;
     private TMP_InputField _nameInput;
     private TMP_Dropdown _typeInput;
     private TextMeshProUGUI _limitsText;
@@ -47,6 +48,16 @@ public class VariableDataPiece : MonoBehaviour
         return _limitsText.text;
     }
 
+    /// <summary>
+    /// Method <c>SetManager</c> stores the manager of the game object.
+    /// <param name="manager">The manager to utilise.</param>
+    /// </summary>
+    public void SetManager(ChromosomeCreationManager manager)
+    {
+        _manager = manager;
+    }
+
+    
 
     /// <summary>
     /// Method <c>DropdownChanged</c> enables the customise button if the struct datatype is chosen.
@@ -54,7 +65,6 @@ public class VariableDataPiece : MonoBehaviour
     /// </summary>
     public void DropdownChanged(int pos)
     {
-        Debug.Log(_typeInput.options[_typeInput.value].text);
         if (_typeInput.options[_typeInput.value].text == "Struct")
         {
             _typeBtn.SetActive(true);
@@ -64,5 +74,10 @@ public class VariableDataPiece : MonoBehaviour
         {
             _typeBtn.SetActive(false);
         }
+    }
+
+    public void OpenLimits()
+    {
+        _manager.OpenLimitsMenu(GetName(), GetVarType());
     }
 }

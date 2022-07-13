@@ -64,7 +64,7 @@ public class MenuManager : MonoBehaviour
     /// Method <c>ChangeActivity</c> changes the activity of the menu appropriately.
     /// <param name="enable">Whether to enable the activity or not.</param>
     /// </summary>
-    protected void ChangeActivity(bool enable)
+    public void ChangeActivity(bool enable)
     {
         IsActive = enable;
         Canvas.alpha = enable ? 1 : 0;
@@ -75,7 +75,7 @@ public class MenuManager : MonoBehaviour
     /// <summary>
     /// Method <c>CloseMenu</c> closes the menu.
     /// </summary>
-    protected void CloseMenu()
+    public void CloseMenu()
     {
         ChangeActivity(false);
     }
