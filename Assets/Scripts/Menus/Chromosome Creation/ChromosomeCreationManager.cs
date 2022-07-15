@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class ChromosomeCreationManager : MenuManager
     public static int CrossoverCount;
     private LimitsSubmenuManager _limitsManager;
     private (string, GameObject) _activePanel;
+    private List<ChromosomeVariable> _variables;
 
     /// <summary>
     /// Method <c>Start</c> sets up the manager.
@@ -28,9 +30,28 @@ public class ChromosomeCreationManager : MenuManager
         _activePanel = ("Fitness", panels["Fitness"]);
         MutationCount = 1;
         CrossoverCount = 1;
+        _variables = new List<ChromosomeVariable>();
         _limitsManager = limitsMenu.GetComponent<LimitsSubmenuManager>();
-        _limitsManager.CloseMenu();
+        _limitsManager.CloseMenuUnsaved();
         AddVarPrefab();
+    }
+    
+    /// <summary>
+    /// Method <c>OnEnable</c> sets reactionary method calls to invoked events.
+    /// </summary>
+    protected new void OnEnable()
+    {
+        LimitsSubmenuManager.VariableUpdated += UpdateLimits;
+        InputManager.CancelAction += CloseMenu;
+    }
+
+    /// <summary>
+    /// Method <c>OnDisable</c> disables reactionary method calls to invoked events.
+    /// </summary>
+    protected new void OnDisable()
+    {
+        LimitsSubmenuManager.VariableUpdated -= UpdateLimits;
+        InputManager.CancelAction -= CloseMenu;
     }
     
     
@@ -53,23 +74,24 @@ public class ChromosomeCreationManager : MenuManager
 
     /// <summary>
     /// Method <c>OpenLimitsMenu</c> enables and sets up the limits menu.
-    /// <param name="variable">The name of the variable calling this.</param>
+    /// <param name="var_id">The ID of the variable calling this.</param>
     /// <param name="type">The type of the variable calling this.</param>
     /// </summary>
-    public void OpenLimitsMenu(string variable, string type)
+    public void OpenLimitsMenu(int var_id, VarType type)
     {
         _limitsManager.ChangeActivity(true);
-        _limitsManager.SetupScene(variable, type);
+        _limitsManager.SetupScene(_variables[var_id - 1].limits, var_id, type);
     }
 
-    
-    
+
+
     /// <summary>
     /// Method <c>AddPrefab</c> extends the scroller size and creates the new prefab for the Variable panel.
     /// This exists for the purpose of button calls.
     /// </summary>
     public void AddVarPrefab()
     {
+        _variables.Add(new ChromosomeVariable(VarType.Integer));
         AddPrefab(scrollers["Variable"], dataPrefabs["Variable"]);
     }
 
@@ -126,7 +148,11 @@ public class ChromosomeCreationManager : MenuManager
 
         if (prefab_name == "Variable")
         {
-            built_prefab.GetComponent<VariableDataPiece>().SetManager(this);
+            var var_data_piece = built_prefab.GetComponent<VariableDataPiece>();
+            var_data_piece.SetManager(this);
+            var_data_piece.Start();
+            _limitsManager.Invalids[var_data_piece.GetId()] = new List<string>();
+            Debug.Log(var_data_piece.GetId());
         }
     }
     
@@ -179,5 +205,15 @@ public class ChromosomeCreationManager : MenuManager
 
         // Move scroller to the top
         scroller.transform.parent.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
+    }
+    
+    /// <summary>
+    /// Method <c>UpdateLimits</c> updates the limits of a specific variable.
+    /// <param name="limits">The new variable limits.</param>
+    /// <param name="var_id">The id of the variable to update.</param>
+    /// </summary>
+    private void UpdateLimits(ChromosomeLimits limits, int var_id)
+    {
+        _variables[var_id - 1].limits = limits;
     }
 }

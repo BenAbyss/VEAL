@@ -59,11 +59,14 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\Chromosomes\Chromosome.cs" />
+     <Compile Include="Assets\Scripts\Chromosomes\ChromosomeLimits.cs" />
      <Compile Include="Assets\Scripts\Chromosomes\ChromosomeVariable.cs" />
+     <Compile Include="Assets\Scripts\Chromosomes\VarType.cs" />
      <Compile Include="Assets\Scripts\InputManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\ChromosomeCreationManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\CrossoverDataPiece.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\FitnessDataPiece.cs" />
+     <Compile Include="Assets\Scripts\Menus\Chromosome Creation\InvalidValueDataPiece.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\LimitsSubmenuManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\MutationDataPiece.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\VariableDataPiece.cs" />

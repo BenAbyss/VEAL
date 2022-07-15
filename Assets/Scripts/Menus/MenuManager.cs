@@ -75,7 +75,7 @@ public class MenuManager : MonoBehaviour
     /// <summary>
     /// Method <c>CloseMenu</c> closes the menu.
     /// </summary>
-    public void CloseMenu()
+    public virtual void CloseMenu()
     {
         ChangeActivity(false);
     }

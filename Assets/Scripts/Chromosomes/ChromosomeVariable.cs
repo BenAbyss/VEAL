@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
 
-public class ChromosomeVariable : MonoBehaviour
+public class ChromosomeVariable
 {
-    public enum VarType
-    {
-        Integer, Float, Boolean,
-        String, Character,
-        Enumerator, Struct
-    }
-    
     public string chrName;
     public VarType type;
-    public string limits; // wont be string
+    public ChromosomeLimits limits; 
     public string fitnessCalc; // wont be string
     public float fitnessWeight;
+
+    public ChromosomeVariable(VarType new_type)
+    {
+        type = new_type;
+        limits = new ChromosomeLimits(new_type);
+    }
 }

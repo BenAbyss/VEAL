@@ -1,26 +1,42 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class VariableDataPiece : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI limitsText;
+    [SerializeField] private GameObject typeBtn;
+    
+    private static int variablesCount;
+    private int _variableId;
     private ChromosomeCreationManager _manager;
     private TMP_InputField _nameInput;
     private TMP_Dropdown _typeInput;
-    private TextMeshProUGUI _limitsText;
-    private GameObject _typeBtn;
 
     /// <summary>
     /// Method <c>Start</c> sets up the variables.
     /// </summary>
     public void Start()
     {
+        if (_variableId != 0) return;
+        variablesCount++;
+        _variableId = variablesCount;
+        
         _nameInput = GetComponentInChildren<TMP_InputField>();
         _typeInput = GetComponentInChildren<TMP_Dropdown>();
-        _limitsText = GameObject.Find("LimitsText").GetComponent<TextMeshProUGUI>();
-        _typeBtn = GameObject.Find("TypeBtn");
-        _typeBtn.SetActive(false);
+        typeBtn.SetActive(false);
     }
 
+    /// <summary>
+    /// Method <c>GetId</c> gets the variable's ID.
+    /// <returns>The variables' ID.</returns>
+    /// </summary>
+    public int GetId()
+    {
+        return Math.Max(_variableId, 1);
+    }
+    
     /// <summary>
     /// Method <c>GetName</c> gets the variable's name.
     /// <returns>The variables' name.</returns>
@@ -34,9 +50,9 @@ public class VariableDataPiece : MonoBehaviour
     /// Method <c>GetVarType</c> gets the variable's type.
     /// <returns>The variables' type.</returns>
     /// </summary>
-    public string GetVarType()
+    public VarType GetVarType()
     {
-        return _typeInput.options[_typeInput.value].text;
+        return (VarType)Enum.Parse(typeof(VarType), _typeInput.options[_typeInput.value].text);
     }
 
     /// <summary>
@@ -45,7 +61,7 @@ public class VariableDataPiece : MonoBehaviour
     /// </summary>
     public string GetLimits()
     {
-        return _limitsText.text;
+        return limitsText.text;
     }
 
     /// <summary>
@@ -67,17 +83,17 @@ public class VariableDataPiece : MonoBehaviour
     {
         if (_typeInput.options[_typeInput.value].text == "Struct")
         {
-            _typeBtn.SetActive(true);
-            _limitsText.text = "Set limits internally";
+            typeBtn.SetActive(true);
+            limitsText.text = "Set limits internally";
         }
         else
         {
-            _typeBtn.SetActive(false);
+            typeBtn.SetActive(false);
         }
     }
 
     public void OpenLimits()
     {
-        _manager.OpenLimitsMenu(GetName(), GetVarType());
+        _manager.OpenLimitsMenu(GetId(), GetVarType());
     }
 }
