@@ -20,7 +20,7 @@ public class ChromosomeCreationManager : MenuManager
     public static int CrossoverCount;
     private LimitsSubmenuManager _limitsManager;
     private (string, GameObject) _activePanel;
-    private List<ChromosomeVariable> _variables;
+    private Dictionary<int, ChromosomeVariable> _variables;
 
     /// <summary>
     /// Method <c>Start</c> sets up the manager.
@@ -30,7 +30,7 @@ public class ChromosomeCreationManager : MenuManager
         _activePanel = ("Fitness", panels["Fitness"]);
         MutationCount = 1;
         CrossoverCount = 1;
-        _variables = new List<ChromosomeVariable>();
+        _variables = new Dictionary<int, ChromosomeVariable>();
         _limitsManager = limitsMenu.GetComponent<LimitsSubmenuManager>();
         _limitsManager.CloseMenuUnsaved();
         AddVarPrefab();
@@ -43,6 +43,7 @@ public class ChromosomeCreationManager : MenuManager
     {
         LimitsSubmenuManager.VariableUpdated += UpdateLimits;
         InputManager.CancelAction += CloseMenu;
+        VariableDataPiece.DeletedVariable += RemoveVariable;
     }
 
     /// <summary>
@@ -52,6 +53,7 @@ public class ChromosomeCreationManager : MenuManager
     {
         LimitsSubmenuManager.VariableUpdated -= UpdateLimits;
         InputManager.CancelAction -= CloseMenu;
+        VariableDataPiece.DeletedVariable -= RemoveVariable;
     }
     
     
@@ -80,7 +82,7 @@ public class ChromosomeCreationManager : MenuManager
     public void OpenLimitsMenu(int var_id, VarType type)
     {
         _limitsManager.ChangeActivity(true);
-        _limitsManager.SetupScene(_variables[var_id - 1].limits, var_id, type);
+        _limitsManager.SetupScene(_variables[var_id].limits, var_id, type);
     }
 
 
@@ -91,7 +93,7 @@ public class ChromosomeCreationManager : MenuManager
     /// </summary>
     public void AddVarPrefab()
     {
-        _variables.Add(new ChromosomeVariable(VarType.Integer));
+        _variables[VariableDataPiece.VariablesCount+1] = new ChromosomeVariable(VarType.Integer);
         AddPrefab(scrollers["Variable"], dataPrefabs["Variable"]);
     }
 
@@ -113,6 +115,14 @@ public class ChromosomeCreationManager : MenuManager
     {
         CrossoverCount++;
         AddPrefab(scrollers["Crossover"], dataPrefabs["Crossover"]);
+    }
+
+    private void RemoveVariable(int var_id)
+    {
+        _variables.Remove(var_id);
+        var scroller = scrollers["Variable"];
+        AdjustScroller(scroller, "Variable", scroller.GetComponent<VerticalLayoutGroup>(), 
+            scroller.GetComponent<RectTransform>(), scroller.transform.childCount-1);
     }
 
 
@@ -152,7 +162,6 @@ public class ChromosomeCreationManager : MenuManager
             var_data_piece.SetManager(this);
             var_data_piece.Start();
             _limitsManager.Invalids[var_data_piece.GetId()] = new List<string>();
-            Debug.Log(var_data_piece.GetId());
         }
     }
     
@@ -214,6 +223,6 @@ public class ChromosomeCreationManager : MenuManager
     /// </summary>
     private void UpdateLimits(ChromosomeLimits limits, int var_id)
     {
-        _variables[var_id - 1].limits = limits;
+        _variables[var_id].limits = limits;
     }
 }

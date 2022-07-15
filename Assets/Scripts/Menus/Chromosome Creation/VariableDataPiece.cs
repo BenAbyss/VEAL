@@ -1,14 +1,14 @@
 ﻿using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class VariableDataPiece : MonoBehaviour
 {
+    public static event Action<int> DeletedVariable;
     [SerializeField] private TextMeshProUGUI limitsText;
     [SerializeField] private GameObject typeBtn;
     
-    private static int variablesCount;
+    public static int VariablesCount;
     private int _variableId;
     private ChromosomeCreationManager _manager;
     private TMP_InputField _nameInput;
@@ -20,13 +20,24 @@ public class VariableDataPiece : MonoBehaviour
     public void Start()
     {
         if (_variableId != 0) return;
-        variablesCount++;
-        _variableId = variablesCount;
+        VariablesCount++;
+        _variableId = VariablesCount;
         
         _nameInput = GetComponentInChildren<TMP_InputField>();
         _typeInput = GetComponentInChildren<TMP_Dropdown>();
         typeBtn.SetActive(false);
     }
+    
+    /// <summary>
+    /// Method <c>Delete</c> calls it's deletion before deleting the game object.
+    /// </summary>
+    public void Delete()
+    {
+        DeletedVariable?.Invoke(_variableId);
+        Destroy(gameObject);
+    }
+
+
 
     /// <summary>
     /// Method <c>GetId</c> gets the variable's ID.
