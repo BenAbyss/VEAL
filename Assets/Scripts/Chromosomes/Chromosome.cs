@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Chromosome : MonoBehaviour
+[Serializable] public class Chromosome
 {
-    private List<ChromosomeVariable> _variables;
-    private List<string> _mutationNames;
-    private List<string> _crossoverNames;
+    public List<ChromosomeVariable> Variables;
+    public List<string> MutationNames;
+    public List<string> CrossoverNames;
 }

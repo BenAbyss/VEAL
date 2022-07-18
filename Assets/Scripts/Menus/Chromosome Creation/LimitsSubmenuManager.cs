@@ -99,13 +99,21 @@ public class LimitsSubmenuManager : MenuManager
         }
     }
 
-    private void UpdateSceneData(int[] num_val = null, int[] str_length = null, string eq = null,
-        int dec_places = -1, List<string> invalid_strings = null)
+    private void UpdateSceneData(Dictionary<string, int> num_val = null, Dictionary<string, int> str_length = null, 
+        string eq = null, int dec_places = -1, List<string> invalid_strings = null)
     {
-        SetFieldData("MinInput", num_val != null ? num_val[0].ToString() : "");
-        SetFieldData("MaxInput", num_val != null ? num_val[1].ToString() : "");
-        SetFieldData("MinLengthInput", str_length != null ? str_length[0].ToString() : "");
-        SetFieldData("MaxLengthInput", str_length != null ? str_length[1].ToString() : "");
+        if (num_val != null)
+        {
+            SetFieldData("MinInput", num_val.ContainsKey("Min") ? num_val["Min"].ToString() : "");
+            SetFieldData("MaxInput", num_val.ContainsKey("Max") ? num_val["Max"].ToString() : "");
+        }
+
+        if (str_length != null)
+        {
+            SetFieldData("MinLengthInput", str_length.ContainsKey("Min") ? str_length["Min"].ToString() : "");
+            SetFieldData("MaxLengthInput", str_length.ContainsKey("Min") ? str_length["Max"].ToString() : "");
+        }
+        
         SetFieldData("DecInput", dec_places != -1 ? dec_places.ToString() : "");
         SetFieldData("EqInput", eq ?? "");
 
@@ -132,19 +140,18 @@ public class LimitsSubmenuManager : MenuManager
             case VarType.Integer:
                 numbersSubmenu.SetActive(true);
                 ToggleOptionalItems(false);
-                limits = new ChromosomeLimits(_currentType, new[] 
-                    {GetIntFieldData("MinInput"), GetIntFieldData("MaxInput")}, eq: GetFieldData("EqInput"));
+                limits = new ChromosomeLimits(_currentType, CreateMinMaxDict("MinInput", "MaxInput"), 
+                    eq: GetFieldData("EqInput"));
                 break;
             case VarType.Float:
                 numbersSubmenu.SetActive(true);
-                limits = new ChromosomeLimits(_currentType, new[] 
-                    {GetIntFieldData("MinInput"), GetIntFieldData("MaxInput")}, eq: GetFieldData("EqInput"),
-                    dec_places: GetIntFieldData("DecInput"));
+                limits = new ChromosomeLimits(_currentType, CreateMinMaxDict("MinInput", "MaxInput"), 
+                    eq: GetFieldData("EqInput"), dec_places: GetIntFieldData("DecInput"));
                 break;
             case VarType.String:
                 textSubmenu.SetActive(true);
                 limits = new ChromosomeLimits(_currentType, invalid_strings: Invalids[_varId],
-                    str_length: new[] {GetIntFieldData("MinLengthInput"), GetIntFieldData("MaxLengthInput")});
+                    str_length: CreateMinMaxDict("MinLengthInput", "MaxLengthInput"));
                 break;
             case VarType.Character:
                 textSubmenu.SetActive(true);
@@ -211,7 +218,7 @@ public class LimitsSubmenuManager : MenuManager
     /// </summary>
      public void MinInput(string input)
      {
-         InputLimit(input, "MinInput", @"[^0-9]");
+         InputLimit(input, "MinInput", @"[^.0-9]");
      }
      
     /// <summary>
@@ -220,7 +227,7 @@ public class LimitsSubmenuManager : MenuManager
     /// </summary>
      public void MaxInput(string input)
      {
-         InputLimit(input, "MaxInput", @"[^0-9]");
+         InputLimit(input, "MaxInput", @"[^.0-9]");
      }
      
     /// <summary>
@@ -249,7 +256,7 @@ public class LimitsSubmenuManager : MenuManager
     /// </summary>
      public void DecInput(string input)
      {
-         InputLimit(input, "DecInput", @"[^.0-9]");
+         InputLimit(input, "DecInput", @"[^0-9]");
      }
 
     /// <summary>
@@ -356,5 +363,27 @@ public class LimitsSubmenuManager : MenuManager
         trans.sizeDelta = new Vector2(trans.sizeDelta[0],
             ((RectTransform) invalidPrefab.transform).rect.height * Invalids[_varId].Count
             + grid.spacing * Invalids[_varId].Count + grid.padding.top * 2);
+    }
+
+    /// <summary>
+    /// Method <c>CreateMinMaxDict</c> creates a dictionary for minimum and maximum inputted values,
+    /// providing they exist.
+    /// <param name="min">The name of the minimum input text field.</param>
+    /// <param name="max">The name of the maximum input text field.</param>
+    /// <returns>The created dictionary</returns>
+    /// </summary>
+    private Dictionary<string, int> CreateMinMaxDict(string min, string max)
+    {
+        var dict = new Dictionary<string, int>();
+        if (GetFieldData(min) != "")
+        {
+            dict["Min"] = GetIntFieldData(min);
+        }
+        if (GetFieldData(max) != "")
+        {
+            dict["Max"] = GetIntFieldData(max);
+        }
+
+        return dict;
     }
 }

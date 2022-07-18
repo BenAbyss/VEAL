@@ -58,6 +58,15 @@ public class VariableDataPiece : MonoBehaviour
     }
 
     /// <summary>
+    /// Method <c>SetName</c> sets the variable's name.
+    /// <param name="new_name">The new name.</param>
+    /// </summary>
+    public void SetName(string new_name)
+    {
+        _nameInput.text = new_name;
+    }
+
+    /// <summary>
     /// Method <c>GetVarType</c> gets the variable's type.
     /// <returns>The variables' type.</returns>
     /// </summary>
@@ -84,8 +93,17 @@ public class VariableDataPiece : MonoBehaviour
         _manager = manager;
     }
 
-    
 
+
+    /// <summary>
+    /// Method <c>NameChanged</c> calls the manager to change the name.
+    /// <param name="new_name">The newly entered name.</param>
+    /// </summary>
+    public void NameChanged(string new_name)
+    {
+        _manager.NewVarName(new_name, _variableId);
+    }
+    
     /// <summary>
     /// Method <c>DropdownChanged</c> enables the customise button if the struct datatype is chosen.
     /// <param name="pos">The dropdown position selected.</param>
@@ -103,8 +121,61 @@ public class VariableDataPiece : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Method <c>OpenLimits</c> opens up the limits menu.
+    /// </summary>
     public void OpenLimits()
     {
         _manager.OpenLimitsMenu(GetId(), GetVarType());
+    }
+
+    /// <summary>
+    /// Method <c>UpdateText</c> updates the brief limits text appropriately.
+    /// <param name="limits">The limits to base the text on.</param>
+    /// </summary>
+    public void UpdateText(ChromosomeLimits limits)
+    {
+        var new_text = "";
+
+        if (limits.NumVal != null)
+        {
+            if (limits.NumVal.ContainsKey("Min") && limits.NumVal.ContainsKey("Max"))
+            {
+                new_text += $"range ({limits.NumVal["Min"]}, {limits.NumVal["Max"]}), ";
+            } 
+            else if (limits.NumVal.ContainsKey("Min"))
+            {
+                new_text += $"min {limits.NumVal["Min"]}, ";
+            } 
+            else if (limits.NumVal.ContainsKey("Max"))
+            {
+                new_text += $"max {limits.NumVal["Max"]}, ";
+            }
+        }
+        
+        if (limits.StrLength != null)
+        {
+            if (limits.StrLength.ContainsKey("Min") && limits.StrLength.ContainsKey("Max"))
+            {
+                new_text += $"range ({limits.StrLength["Min"]}, {limits.StrLength["Max"]}), ";
+            } 
+            else if (limits.StrLength.ContainsKey("Min"))
+            {
+                new_text += $"min {limits.StrLength["Min"]}, ";
+            } 
+            else if (limits.StrLength.ContainsKey("Max"))
+            {
+                new_text += $"min {limits.StrLength["Max"]}, ";
+            }
+        }
+        
+        new_text += (limits.Equation != "" ? "must meet eq, " : "");
+        new_text += (limits.DecPlaces != -1 ? $"{limits.DecPlaces}d.p., " : "");
+        new_text += (limits.InvalidStrings != null ?  "not invalid string, " : "");
+
+        // if no limits were entered, state so
+        new_text = (new_text != "" ?  new_text : "No Limits");
+
+        limitsText.text = new_text.Substring(0, new_text.Length-2);
     }
 }

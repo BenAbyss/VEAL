@@ -5050,6 +5050,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: LimitSubmenu
       objectReference: {fileID: 0}
+    - target: {fileID: 6819524768077771232, guid: ab34fa4c50a29bb42945f58646d4a5eb,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ab34fa4c50a29bb42945f58646d4a5eb, type: 3}
 --- !u!224 &4941897748059766824 stripped

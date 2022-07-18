@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -20,7 +21,11 @@ public class ChromosomeCreationManager : MenuManager
     public static int CrossoverCount;
     private LimitsSubmenuManager _limitsManager;
     private (string, GameObject) _activePanel;
+    
     private Dictionary<int, ChromosomeVariable> _variables;
+    private Dictionary<int, VariableDataPiece> _variableObjs;
+    private Dictionary<int, FitnessDataPiece> _fitnessObjs;
+    private Dictionary<int, string> _varNames;
 
     /// <summary>
     /// Method <c>Start</c> sets up the manager.
@@ -30,7 +35,12 @@ public class ChromosomeCreationManager : MenuManager
         _activePanel = ("Fitness", panels["Fitness"]);
         MutationCount = 1;
         CrossoverCount = 1;
+        
         _variables = new Dictionary<int, ChromosomeVariable>();
+        _variableObjs = new Dictionary<int, VariableDataPiece>();
+        _fitnessObjs = new Dictionary<int, FitnessDataPiece>();
+        _varNames = new Dictionary<int, string>();
+        
         _limitsManager = limitsMenu.GetComponent<LimitsSubmenuManager>();
         _limitsManager.CloseMenuUnsaved();
         AddVarPrefab();
@@ -55,8 +65,22 @@ public class ChromosomeCreationManager : MenuManager
         InputManager.CancelAction -= CloseMenu;
         VariableDataPiece.DeletedVariable -= RemoveVariable;
     }
-    
-    
+
+
+
+    /// <summary>
+    /// Method <c>ExtractChromosome</c> creates a chromosome from all the menu segments.
+    /// <returns>The created chromosome from the menu</returns>
+    /// </summary>
+    public Chromosome ExtractChromosome()
+    {
+        var chromosome = new Chromosome();
+        var variables = _variables.Select(pair => 
+            _fitnessObjs[pair.Key].ApplyFitness(pair.Value)).ToList();
+
+        chromosome.Variables = variables;
+        return chromosome;
+    }
     
     /// <summary>
     /// Method <c>MovePanelsLeft</c> swaps the top panel to the next panel leftwards.
@@ -95,6 +119,7 @@ public class ChromosomeCreationManager : MenuManager
     {
         _variables[VariableDataPiece.VariablesCount+1] = new ChromosomeVariable(VarType.Integer);
         AddPrefab(scrollers["Variable"], dataPrefabs["Variable"]);
+        AddPrefab(scrollers["Fitness"], dataPrefabs["Fitness"]);
     }
 
     /// <summary>
@@ -119,7 +144,9 @@ public class ChromosomeCreationManager : MenuManager
 
     private void RemoveVariable(int var_id)
     {
+        _varNames.Remove(var_id);
         _variables.Remove(var_id);
+        Destroy(scrollers["Fitness"].transform.GetChild(var_id-1).gameObject);
         var scroller = scrollers["Variable"];
         AdjustScroller(scroller, "Variable", scroller.GetComponent<VerticalLayoutGroup>(), 
             scroller.GetComponent<RectTransform>(), scroller.transform.childCount-1);
@@ -154,14 +181,25 @@ public class ChromosomeCreationManager : MenuManager
         HorizontalOrVerticalLayoutGroup grid, int child_count)
     {
         var built_prefab = Instantiate(prefab, grid.transform, false);
-        addBtns[prefab_name].transform.SetSiblingIndex(child_count);
+
+        if (prefab_name != "Fitness")
+        {
+            addBtns[prefab_name].transform.SetSiblingIndex(child_count);
+        }
 
         if (prefab_name == "Variable")
         {
             var var_data_piece = built_prefab.GetComponent<VariableDataPiece>();
             var_data_piece.SetManager(this);
             var_data_piece.Start();
+            _variableObjs[var_data_piece.GetId()] = var_data_piece;
             _limitsManager.Invalids[var_data_piece.GetId()] = new List<string>();
+        }
+        else if (prefab_name == "Fitness")
+        {
+            var fitness_data_piece = built_prefab.GetComponent<FitnessDataPiece>();
+            fitness_data_piece.Start();
+            _fitnessObjs[fitness_data_piece.GetId()] = fitness_data_piece;
         }
     }
     
@@ -194,26 +232,56 @@ public class ChromosomeCreationManager : MenuManager
     private void AdjustScroller(GameObject scroller, string scroller_name, HorizontalOrVerticalLayoutGroup grid, 
         RectTransform trans, int content_amnt)
     {
+        // adjust appropriately for fitnesses lack of add button
+        var btn_size = (scroller_name != "Fitness")
+            ? ((RectTransform) addBtns[scroller_name].transform).rect.size : Vector2.zero;
+        if (scroller_name == "Fitness") content_amnt++;
+        
         // Adjusts the size to fit all objects
         try
         {
             grid = (VerticalLayoutGroup) grid;
             trans.sizeDelta = new Vector2(trans.sizeDelta[0],
                 ((RectTransform) dataPrefabs[scroller_name].transform).rect.height * content_amnt
-                + grid.spacing * content_amnt + grid.padding.top * 2 +
-                ((RectTransform) addBtns[scroller_name].transform).rect.height);
+                + grid.spacing * content_amnt + grid.padding.top * 2 + btn_size.y);
         }
         catch (InvalidCastException)
         {
             grid = (HorizontalLayoutGroup) grid;
             trans.sizeDelta = new Vector2(((RectTransform) dataPrefabs[scroller_name].transform).rect.width 
                                           * content_amnt + grid.spacing * content_amnt + grid.padding.left * 2 +
-                                          ((RectTransform) addBtns[scroller_name].transform).rect.width, 
-                                         trans.sizeDelta[1]);
+                                          btn_size.x, trans.sizeDelta[1]);
         }
 
         // Move scroller to the top
         scroller.transform.parent.GetComponentInParent<ScrollRect>().verticalNormalizedPosition = 0;
+    }
+
+
+
+    /// <summary>
+    /// Method <c>NewVarName</c> ensures the name is unique, then updates it for the variable and linked fitness.
+    /// <param name="new_name">The newly entered name.</param>
+    /// <param name="var_id">The ID of the variable having it's name changed.</param>
+    /// </summary>
+    public void NewVarName(string new_name, int var_id)
+    {
+        if (new_name == "") return;
+        
+        var adjusted_val = 0;
+        if (!_varNames.ContainsKey(var_id)) _varNames[var_id] = "";
+        
+        while (_varNames.ContainsValue(new_name) && _varNames[var_id] != new_name)
+        {
+            if (adjusted_val > 0) new_name = new_name.Substring(0, new_name.Length - 2);
+            adjusted_val++;
+            new_name += "_" + adjusted_val;
+        }
+
+        _varNames[var_id] = new_name;
+        _variableObjs[var_id].SetName(new_name);
+        _variables[var_id].chrName = new_name;
+        _fitnessObjs[var_id].SetVarName(new_name);
     }
     
     /// <summary>
@@ -224,5 +292,6 @@ public class ChromosomeCreationManager : MenuManager
     private void UpdateLimits(ChromosomeLimits limits, int var_id)
     {
         _variables[var_id].limits = limits;
+        _variableObjs[var_id].UpdateText(limits);
     }
 }
