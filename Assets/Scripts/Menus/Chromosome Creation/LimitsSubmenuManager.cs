@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
@@ -11,13 +12,17 @@ public class LimitsSubmenuManager : MenuManager
     
     [SerializeField] private GameObject numbersSubmenu;
     [SerializeField] private GameObject textSubmenu;
+    [SerializeField] private GameObject enumSubmenu;
     [SerializeField] private GameObject noLimitsText;
     [SerializeField] private GameObject invalidValuesScroller;
+    [SerializeField] private GameObject enumeratorScroller;
     [SerializeField] private GameObject invalidPrefab;
+    [SerializeField] private GameObject enumPrefab;
     [SerializeField] private GameObject[] optionalItems;
     [SerializeField] private SerializableStringGameObjDict textFields;
 
     public Dictionary<int, List<string>> Invalids = new Dictionary<int, List<string>>();
+    public Dictionary<int, List<(string, float)>> Enumerators = new Dictionary<int, List<(string, float)>>();
     private int _varId;
     private VarType _currentType;
 
@@ -26,7 +31,8 @@ public class LimitsSubmenuManager : MenuManager
     /// </summary>
     protected new void OnEnable()
     {
-        InvalidValueDataPiece.DeletedInvalidValue += InvalidRemoved;
+        InvalidValueDataPiece.DeletedInvalidValue += DataPieceRemoved;
+        EnumeratorDataPiece.DeletedEnumeratorValue += DataPieceRemoved;
         InputManager.CancelAction += CloseMenu;
     }
 
@@ -35,7 +41,8 @@ public class LimitsSubmenuManager : MenuManager
     /// </summary>
     protected new void OnDisable()
     {
-        InvalidValueDataPiece.DeletedInvalidValue -= InvalidRemoved;
+        InvalidValueDataPiece.DeletedInvalidValue -= DataPieceRemoved;
+        EnumeratorDataPiece.DeletedEnumeratorValue -= DataPieceRemoved;
         InputManager.CancelAction -= CloseMenu;
     }
     
@@ -93,6 +100,10 @@ public class LimitsSubmenuManager : MenuManager
                 ToggleOptionalItems(false);
                 UpdateSceneData(invalid_strings: curr_limits.InvalidStrings);
                 break;
+            case VarType.Enumerator:
+                enumSubmenu.SetActive(true);
+                UpdateSceneData(enum_options: Enumerators[_varId]);
+                break;
             default:
                 noLimitsText.SetActive(true);
                 break;
@@ -100,7 +111,7 @@ public class LimitsSubmenuManager : MenuManager
     }
 
     private void UpdateSceneData(Dictionary<string, int> num_val = null, Dictionary<string, int> str_length = null, 
-        string eq = null, int dec_places = -1, List<string> invalid_strings = null)
+        string eq = null, int dec_places = -1, List<string> invalid_strings = null, List<(string, float)> enum_options = null)
     {
         if (num_val != null)
         {
@@ -117,12 +128,21 @@ public class LimitsSubmenuManager : MenuManager
         SetFieldData("DecInput", dec_places != -1 ? dec_places.ToString() : "");
         SetFieldData("EqInput", eq ?? "");
 
-        ClearInvalidScroller();
+        ClearScroller(invalidValuesScroller);
         if (invalid_strings != null)
         {
             foreach (var invalid_string in invalid_strings)
             {
                 AddNewInvalid(invalid_string);
+            }
+        }
+        
+        ClearScroller(enumeratorScroller);
+        if (enum_options != null)
+        {
+            foreach (var enum_option in enum_options)
+            {
+                AddNewEnum(enum_option);
             }
         }
     }
@@ -158,6 +178,12 @@ public class LimitsSubmenuManager : MenuManager
                 ToggleOptionalItems(false);
                 limits = new ChromosomeLimits(_currentType, invalid_strings: Invalids[_varId]);
                 break;
+            case VarType.Enumerator:
+                enumSubmenu.SetActive(true);
+                // for each enumerator, update it to the new values
+                UpdateEnums();
+                limits = new ChromosomeLimits(_currentType, enum_options: Enumerators[_varId]);
+                break;
             default:
                 noLimitsText.SetActive(true);
                 limits = new ChromosomeLimits(_currentType);
@@ -169,6 +195,19 @@ public class LimitsSubmenuManager : MenuManager
 
 
 
+    /// <summary>
+    /// Method <c>EnumAdded</c> adds the new enumeration value from the input box to the list,
+    /// and clears the input box.
+    /// </summary>
+    public void EnumAdded()
+    {
+        var field = textFields["EnumValuesInput"].GetComponent<TMP_InputField>();
+        var new_enum = (field.text, 0);
+        Enumerators[_varId].Add(new_enum);
+        AddNewEnum(new_enum);
+        field.text = "";
+    }
+    
     /// <summary>
     /// Method <c>InvalidAdded</c> adds the new invalid character/string from the input box to the list,
     /// and clears the input box.
@@ -187,24 +226,52 @@ public class LimitsSubmenuManager : MenuManager
     /// </summary>
     private void AddNewInvalid(string text)
     {
-        var prefab = Instantiate(invalidPrefab, 
+        var built_prefab = Instantiate(invalidPrefab, 
             invalidValuesScroller.GetComponent<VerticalLayoutGroup>().transform, false);
-        prefab.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = text;
-        AdjustScroller();
-    }
-
-    private void InvalidRemoved(string invalid)
-    {
-        Invalids[_varId].Remove(invalid);
+        built_prefab.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = text;
         AdjustScroller();
     }
     
     /// <summary>
-    /// Method <c>ClearInvalidScroller</c> clears the invalid strings scroller.
+    /// Method <c>AddNewEnum</c> adds the new enumerator to the list.
+    /// <param name="enumerator">The new enumerator.</param>
     /// </summary>
-    private void ClearInvalidScroller()
+    private void AddNewEnum((string, float) enumerator)
     {
-        foreach (Transform child in invalidValuesScroller.transform)
+        var built_prefab = Instantiate(enumPrefab, 
+            enumeratorScroller.GetComponent<VerticalLayoutGroup>().transform, false);
+        built_prefab.transform.Find("Value").GetComponent<TextMeshProUGUI>().text = enumerator.Item1;
+        built_prefab.transform.Find("WeightInput").GetComponent<TMP_InputField>().text = enumerator.Item2.ToString();
+        AdjustScroller();
+    }
+
+    /// <summary>
+    /// Method <c>DataPieceRemoved</c> deletes the given data piece.
+    /// <param name="type">The type of data to delete.</param>
+    /// <param name="data_piece">The data piece to delete.</param>
+    /// </summary>
+    private void DataPieceRemoved(string type, string data_piece)
+    {
+        switch (type)
+        {
+            case "enumerator":
+                Enumerators[_varId].Remove(Enumerators[_varId].First(item => item.Item1 == data_piece));
+                break;
+            case "invalid":
+                Invalids[_varId].Remove(data_piece);
+                break;
+        }
+
+        AdjustScroller();
+    }
+    
+    /// <summary>
+    /// Method <c>ClearScroller</c> clears the given strings scroller.
+    /// <param name="scroller">The scroller to clear.</param>
+    /// </summary>
+    private void ClearScroller(GameObject scroller)
+    {
+        foreach (Transform child in scroller.transform)
         {
             Destroy(child.gameObject);
         }
@@ -385,5 +452,16 @@ public class LimitsSubmenuManager : MenuManager
         }
 
         return dict;
+    }
+
+    /// <summary>
+    /// Method <c>UpdateEnums</c> updates the enumerators to be the appropriate current values.
+    /// </summary>
+    private void UpdateEnums()
+    {
+        var enums = new List<(string, float)>();
+        enums.AddRange(from Transform child in enumeratorScroller.transform 
+            select child.gameObject.GetComponent<EnumeratorDataPiece>().GetUpdatedEnum());
+        Enumerators[_varId] = enums;
     }
 }

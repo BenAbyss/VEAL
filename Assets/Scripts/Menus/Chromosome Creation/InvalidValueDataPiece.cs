@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InvalidValueDataPiece : MonoBehaviour
 {
-    public static event Action<string> DeletedInvalidValue;
+    public static event Action<string, string> DeletedInvalidValue;
     [SerializeField] private TextMeshProUGUI value;
     
     /// <summary>
@@ -12,7 +12,7 @@ public class InvalidValueDataPiece : MonoBehaviour
     /// </summary>
     public void Delete()
     {
-        DeletedInvalidValue?.Invoke(value.text);
+        DeletedInvalidValue?.Invoke("invalid", value.text);
         Destroy(gameObject);
     }
 }

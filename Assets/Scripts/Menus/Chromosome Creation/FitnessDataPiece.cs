@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class FitnessDataPiece : MonoBehaviour
 {
@@ -23,6 +22,21 @@ public class FitnessDataPiece : MonoBehaviour
         VariablesCount++;
         variableId = VariablesCount;
         DropdownChanged(0);
+    }
+    
+    /// <summary>
+    /// Method <c>UpdateFitness</c> updates the inputted values to match that of the provided fitness.
+    /// <param name="var_name">The variable to match the fitness of.</param>
+    /// <param name="type">The new type of the fitness.</param>
+    /// <param name="weighting">The new weighting of the fitness.</param>
+    /// <param name="target">The new target of the fitness.</param>
+    /// </summary>
+    public void UpdateFitness(string var_name, FitnessType type, float weighting, float target=0)
+    {
+        varName.text = var_name;
+        calcDropdown.value = calcDropdown.options.FindIndex(option => option.text == type.ToString());
+        valInput.text = target.ToString();
+        weightInput.text = weighting.ToString();
     }
 
     
@@ -49,7 +63,7 @@ public class FitnessDataPiece : MonoBehaviour
     /// Method <c>GetCalcType</c> gets the variable's calculation type.
     /// <returns>The variables' calculation type.</returns>
     /// </summary>
-    public FitnessType GetCalcType()
+    private FitnessType GetCalcType()
     {
         return (FitnessType) Enum.Parse(typeof(FitnessType),
             calcDropdown.itemText.text.Replace(" ", ""));
@@ -59,7 +73,7 @@ public class FitnessDataPiece : MonoBehaviour
     /// Method <c>GetCalcVal</c> gets the variable's calculation value.
     /// <returns>The variables' calculation value.</returns>
     /// </summary>
-    public float GetCalcVal()
+    private float GetCalcVal()
     {
         var txt = valInput.text;
         return (float) (txt != "" ? Convert.ToDouble(txt) : 0);
@@ -69,7 +83,7 @@ public class FitnessDataPiece : MonoBehaviour
     /// Method <c>GetWeighting</c> gets the variable's weighting.
     /// <returns>The variables' weighting.</returns>
     /// </summary>
-    public float GetWeighting()
+    private float GetWeighting()
     {
         var txt = weightInput.text;
         return (float) (txt != "" ? Convert.ToDouble(txt) : 0);

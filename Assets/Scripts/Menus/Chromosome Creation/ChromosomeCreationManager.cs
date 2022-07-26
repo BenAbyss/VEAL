@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class ChromosomeCreationManager : MenuManager
 {
+    public static event Action<Chromosome, ChromosomeVariable> EnterVariable;
+    
     [SerializeField] private SerializableStringGameObjDict panels;
     [SerializeField] private SerializableStringGameObjDict addBtns;
     [SerializeField] private SerializableStringGameObjDict dataPrefabs;
@@ -54,6 +56,8 @@ public class ChromosomeCreationManager : MenuManager
         LimitsSubmenuManager.VariableUpdated += UpdateLimits;
         InputManager.CancelAction += CloseMenu;
         VariableDataPiece.DeletedVariable += RemoveVariable;
+        VariableDataPiece.TypeEntered += EnterVarType;
+        ChromosomeSave.LoadChromosome += UpdateForChromosome;
     }
 
     /// <summary>
@@ -64,21 +68,66 @@ public class ChromosomeCreationManager : MenuManager
         LimitsSubmenuManager.VariableUpdated -= UpdateLimits;
         InputManager.CancelAction -= CloseMenu;
         VariableDataPiece.DeletedVariable -= RemoveVariable;
+        VariableDataPiece.TypeEntered -= EnterVarType;
+        ChromosomeSave.LoadChromosome -= UpdateForChromosome;
     }
 
 
 
+    private void EnterVarType(int var_id)
+    {
+        EnterVariable?.Invoke(ExtractChromosome(), _variables[var_id]);
+    }
+    
+    /// <summary>
+    /// Method <c>UpdateForChromosome</c> updates all current input values to match that of the provided chromosome.
+    /// <param name="chromosome">The chromosome to match inputs to.</param>
+    /// </summary>
+    private void UpdateForChromosome(Chromosome chromosome)
+    {
+        // if there's no current chromosome to base it off
+        if (chromosome == null)
+        {
+            chromosome = new Chromosome();
+        }
+        
+        // reset all appropriate elements
+        _activePanel = ("Fitness", panels["Fitness"]);
+        VariableDataPiece.VariablesCount = 0;
+        FitnessDataPiece.VariablesCount = 0;
+        _variables.Clear();
+        foreach (Transform child in scrollers["Variable"].transform) if (child.name != "AddBtn") Destroy(child.gameObject);
+        foreach (Transform child in scrollers["Fitness"].transform) Destroy(child.gameObject);
+ 
+
+        var count = 1;
+
+        if (chromosome.variables.Count == 0)
+        {
+            AddVarPrefab();
+        }
+        foreach (var variable in chromosome.variables)
+        {
+            AddVarPrefab();
+            _variables[count] = variable;
+            _variableObjs[count].UpdateVar(variable);
+            _fitnessObjs[count].UpdateFitness(variable.chrName, variable.fitnessCalc, variable.fitnessWeight,
+                variable.fitnessTargetVal);
+            count++;
+        }
+    }
+    
     /// <summary>
     /// Method <c>ExtractChromosome</c> creates a chromosome from all the menu segments.
     /// <returns>The created chromosome from the menu</returns>
     /// </summary>
-    public Chromosome ExtractChromosome()
+    private Chromosome ExtractChromosome()
     {
         var chromosome = new Chromosome();
         var variables = _variables.Select(pair => 
             _fitnessObjs[pair.Key].ApplyFitness(pair.Value)).ToList();
 
-        chromosome.Variables = variables;
+        chromosome.variables = variables;
         return chromosome;
     }
     
@@ -194,6 +243,7 @@ public class ChromosomeCreationManager : MenuManager
             var_data_piece.Start();
             _variableObjs[var_data_piece.GetId()] = var_data_piece;
             _limitsManager.Invalids[var_data_piece.GetId()] = new List<string>();
+            _limitsManager.Enumerators[var_data_piece.GetId()] = new List<(string, float)>();
         }
         else if (prefab_name == "Fitness")
         {

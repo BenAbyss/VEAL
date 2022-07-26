@@ -5,6 +5,7 @@ using UnityEngine;
 public class VariableDataPiece : MonoBehaviour
 {
     public static event Action<int> DeletedVariable;
+    public static event Action<int> TypeEntered;
     [SerializeField] private TextMeshProUGUI limitsText;
     [SerializeField] private GameObject typeBtn;
     
@@ -37,6 +38,17 @@ public class VariableDataPiece : MonoBehaviour
         Destroy(gameObject);
     }
 
+    /// <summary>
+    /// Method <c>UpdateVar</c> updates the inputted values to match that of the provided variable.
+    /// <param name="variable">The variable to match the values of.</param>
+    /// </summary>
+    public void UpdateVar(ChromosomeVariable variable)
+    {
+        _nameInput.text = variable.chrName;
+        _typeInput.value = _typeInput.options.FindIndex(option => option.text == variable.type.ToString());
+        UpdateText(variable.limits);
+    }
+
 
 
     /// <summary>
@@ -46,15 +58,6 @@ public class VariableDataPiece : MonoBehaviour
     public int GetId()
     {
         return Math.Max(_variableId, 1);
-    }
-    
-    /// <summary>
-    /// Method <c>GetName</c> gets the variable's name.
-    /// <returns>The variables' name.</returns>
-    /// </summary>
-    public string GetName()
-    {
-        return _nameInput.text;
     }
 
     /// <summary>
@@ -70,18 +73,9 @@ public class VariableDataPiece : MonoBehaviour
     /// Method <c>GetVarType</c> gets the variable's type.
     /// <returns>The variables' type.</returns>
     /// </summary>
-    public VarType GetVarType()
+    private VarType GetVarType()
     {
         return (VarType)Enum.Parse(typeof(VarType), _typeInput.options[_typeInput.value].text);
-    }
-
-    /// <summary>
-    /// Method <c>GetLimits</c> gets the variable's limits.
-    /// <returns>The variables' limits.</returns>
-    /// </summary>
-    public string GetLimits()
-    {
-        return limitsText.text;
     }
 
     /// <summary>
@@ -119,6 +113,14 @@ public class VariableDataPiece : MonoBehaviour
         {
             typeBtn.SetActive(false);
         }
+    }
+
+    /// <summary>
+    /// Method <c>CustomiseType</c> calls for the internals to be created or loaded.
+    /// </summary>
+    public void CustomiseType()
+    {
+        TypeEntered?.Invoke(_variableId);
     }
 
     /// <summary>
@@ -169,9 +171,10 @@ public class VariableDataPiece : MonoBehaviour
             }
         }
         
-        new_text += (limits.Equation != "" ? "must meet eq, " : "");
+        new_text += ((limits.Equation != "" && limits.Equation != null) ? "must meet eq, " : "");
         new_text += (limits.DecPlaces != -1 ? $"{limits.DecPlaces}d.p., " : "");
         new_text += (limits.InvalidStrings != null ?  "not invalid string, " : "");
+        new_text += (limits.EnumOptions != null ?  "meets enum options, " : "");
 
         // if no limits were entered, state so
         new_text = (new_text != "" ?  new_text : "No Limits");

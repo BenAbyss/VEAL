@@ -66,6 +66,7 @@
      <Compile Include="Assets\Scripts\InputManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\ChromosomeCreationManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\CrossoverDataPiece.cs" />
+     <Compile Include="Assets\Scripts\Menus\Chromosome Creation\EnumeratorDataPiece.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\FitnessDataPiece.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\InvalidValueDataPiece.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\LimitsSubmenuManager.cs" />
@@ -95,6 +96,7 @@
      <Compile Include="Assets\Scripts\Nodes\Midpoint.cs" />
      <Compile Include="Assets\Scripts\Nodes\MutateByNode.cs" />
      <Compile Include="Assets\Scripts\Nodes\ProbabilityNode.cs" />
+     <Compile Include="Assets\Scripts\Persistent Data\ChromosomeSave.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\NodeSave.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SaveSystem.cs" />
      <Compile Include="Assets\Scripts\Persistent Data\SceneSave.cs" />
