@@ -1,1 +1,1 @@
-{"variables":[{"chrName":"ip","internalsName":"","type":0,"limits":{"LimitType":0,"Equation":"","DecPlaces":-1,"InvalidStrings":[]},"fitnessCalc":0,"fitnessTargetVal":0.0,"fitnessWeight":0.0}],"mutationNames":[],"crossoverNames":[],"parentChromosome":""}
+{"variables":[{"chrName":"","internalsName":"","type":0,"limits":{"LimitType":0,"Equation":"","DecPlaces":-1,"InvalidStrings":[]},"fitnessCalc":0,"fitnessTargetVal":0.0,"fitnessWeight":0.0}],"mutationNames":[],"crossoverNames":[],"parentChromosome":""}

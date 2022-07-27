@@ -73,7 +73,7 @@ public class VariableDataPiece : MonoBehaviour
     /// Method <c>GetVarType</c> gets the variable's type.
     /// <returns>The variables' type.</returns>
     /// </summary>
-    private VarType GetVarType()
+    public VarType GetVarType()
     {
         return (VarType)Enum.Parse(typeof(VarType), _typeInput.options[_typeInput.value].text);
     }
@@ -171,13 +171,13 @@ public class VariableDataPiece : MonoBehaviour
             }
         }
         
-        new_text += ((limits.Equation != "" && limits.Equation != null) ? "must meet eq, " : "");
+        new_text += (!string.IsNullOrEmpty(limits.Equation) ? "must meet eq, " : "");
         new_text += (limits.DecPlaces != -1 ? $"{limits.DecPlaces}d.p., " : "");
         new_text += (limits.InvalidStrings != null ?  "not invalid string, " : "");
         new_text += (limits.EnumOptions != null ?  "meets enum options, " : "");
 
         // if no limits were entered, state so
-        new_text = (new_text != "" ?  new_text : "No Limits");
+        new_text = (new_text != "" ?  new_text : "No Limits, ");
 
         limitsText.text = new_text.Substring(0, new_text.Length-2);
     }

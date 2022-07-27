@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[Serializable] public class Chromosome
+[Serializable] 
+public class Chromosome
 {
      
     public List<ChromosomeVariable> variables;

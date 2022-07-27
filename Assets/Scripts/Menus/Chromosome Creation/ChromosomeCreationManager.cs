@@ -10,6 +10,7 @@ using UnityEngine.UI;
 public class ChromosomeCreationManager : MenuManager
 {
     public static event Action<Chromosome, ChromosomeVariable> EnterVariable;
+    public static event Action<Chromosome, string> SaveChromosome;
     
     [SerializeField] private SerializableStringGameObjDict panels;
     [SerializeField] private SerializableStringGameObjDict addBtns;
@@ -23,6 +24,7 @@ public class ChromosomeCreationManager : MenuManager
     public static int CrossoverCount;
     private LimitsSubmenuManager _limitsManager;
     private (string, GameObject) _activePanel;
+    public static string ParentChromosome;
     
     private Dictionary<int, ChromosomeVariable> _variables;
     private Dictionary<int, VariableDataPiece> _variableObjs;
@@ -58,6 +60,8 @@ public class ChromosomeCreationManager : MenuManager
         VariableDataPiece.DeletedVariable += RemoveVariable;
         VariableDataPiece.TypeEntered += EnterVarType;
         ChromosomeSave.LoadChromosome += UpdateForChromosome;
+        ChromosomeSave.ChromosomeLeft += s => {SaveChromosome?.Invoke(ExtractChromosome(), s); }; 
+        ChromosomeSave.TopChromosomeReached += () => backBtn.SetActive(false);
     }
 
     /// <summary>
@@ -76,6 +80,7 @@ public class ChromosomeCreationManager : MenuManager
 
     private void EnterVarType(int var_id)
     {
+        backBtn.SetActive(true);
         EnterVariable?.Invoke(ExtractChromosome(), _variables[var_id]);
     }
     
@@ -115,6 +120,8 @@ public class ChromosomeCreationManager : MenuManager
                 variable.fitnessTargetVal);
             count++;
         }
+        scrollers["Variable"].GetComponentInParent<ScrollRect>().normalizedPosition = new Vector2(0, 1);
+        scrollers["Fitness"].GetComponentInParent<ScrollRect>().normalizedPosition = new Vector2(0, 1);
     }
     
     /// <summary>
@@ -123,13 +130,26 @@ public class ChromosomeCreationManager : MenuManager
     /// </summary>
     private Chromosome ExtractChromosome()
     {
-        var chromosome = new Chromosome();
-        var variables = _variables.Select(pair => 
-            _fitnessObjs[pair.Key].ApplyFitness(pair.Value)).ToList();
+        var chromosome = new Chromosome {parentChromosome = ParentChromosome};
+        var variables = _variables.Keys.Select(ExtractVariable).ToList();
 
         chromosome.variables = variables;
         return chromosome;
     }
+
+    /// <summary>
+    /// Method <c>ExtractVariable</c> extracts all the variables' data.
+    /// <returns>The variables' data</returns>
+    /// </summary>
+    private ChromosomeVariable ExtractVariable(int var_id)
+    {
+        var variable = _variables[var_id];
+        variable = _fitnessObjs[var_id].ApplyFitness(variable);
+        variable.type = _variableObjs[var_id].GetVarType();
+        return variable;
+    }
+    
+    
     
     /// <summary>
     /// Method <c>MovePanelsLeft</c> swaps the top panel to the next panel leftwards.

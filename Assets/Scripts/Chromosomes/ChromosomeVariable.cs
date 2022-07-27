@@ -1,7 +1,8 @@
 ﻿using System;
 using UnityEngine;
 
-[Serializable] public class ChromosomeVariable
+[Serializable] 
+public class ChromosomeVariable
 {
     public string chrName;
     public string internalsName;

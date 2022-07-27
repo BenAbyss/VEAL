@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[Serializable] public class ChromosomeLimits
+[Serializable] 
+public class ChromosomeLimits
 {
     public VarType LimitType;
     public Dictionary<string, int> NumVal;

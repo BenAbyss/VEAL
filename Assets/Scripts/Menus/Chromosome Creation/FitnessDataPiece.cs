@@ -34,7 +34,8 @@ public class FitnessDataPiece : MonoBehaviour
     public void UpdateFitness(string var_name, FitnessType type, float weighting, float target=0)
     {
         varName.text = var_name;
-        calcDropdown.value = calcDropdown.options.FindIndex(option => option.text == type.ToString());
+        calcDropdown.value = calcDropdown.options.FindIndex(option => 
+            option.text.Replace(" ", "") == type.ToString());
         valInput.text = target.ToString();
         weightInput.text = weighting.ToString();
     }
@@ -66,7 +67,7 @@ public class FitnessDataPiece : MonoBehaviour
     private FitnessType GetCalcType()
     {
         return (FitnessType) Enum.Parse(typeof(FitnessType),
-            calcDropdown.itemText.text.Replace(" ", ""));
+            calcDropdown.options[calcDropdown.value].text.Replace(" ", ""));
     }
     
     /// <summary>
