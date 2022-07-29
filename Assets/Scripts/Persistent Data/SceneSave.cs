@@ -10,10 +10,21 @@ public class SceneSave : NodeSave
 {
     protected override string Subdirectory => "Scenes";
     public static event Action<string, bool> SceneChanged;
+    public static event Action ChromosomeEntered;
+    private static string _ChromosomePath;
     
     private string _currentScene = "MainScene"; // replaced by save file name if it's a saved project
     private Stack<string> _previousScenes = new Stack<string>();
-    
+
+    public void Awake()
+    {
+        // if a chromosome's evolutionary action is being made, swap scenes to that path
+        if (_ChromosomePath != null && MenuManager.ItemCreating != "Nodes" && MenuManager.ItemCreating != "Chromosome")
+        {
+            SwapScenes(_ChromosomePath, false);
+        }
+    }
+
     /// <summary>
     /// Method <c>OnEnable</c> sets reactionary method calls to invoked events.
     /// </summary>
@@ -22,6 +33,9 @@ public class SceneSave : NodeSave
         base.OnEnable();
         InteractiveNodeSpecsPanelManager.LoadInternals += LoadInternals;
         InternalsMenuManager.PreviousScene += PreviousScene;
+        MutationDataPiece.LoadInternals += LoadChromosomeInternals;
+        CrossoverDataPiece.LoadInternals += LoadChromosomeInternals;
+        InternalsMenuManager.ReturnToChromosome += () => SaveNodes(_ChromosomePath);
     }
 
     /// <summary>
@@ -32,8 +46,12 @@ public class SceneSave : NodeSave
         base.OnDisable();
         InteractiveNodeSpecsPanelManager.LoadInternals -= LoadInternals;
         InternalsMenuManager.PreviousScene -= PreviousScene;
+        MutationDataPiece.LoadInternals -= LoadChromosomeInternals;
+        CrossoverDataPiece.LoadInternals -= LoadChromosomeInternals;
     }
 
+    
+    
     /// <summary>
     /// Method <c>LoadInternals</c> saves and destroys the current scene, before loading the new scene.
     /// <param name="filename">The name of the new scene to load.</param>
@@ -43,7 +61,15 @@ public class SceneSave : NodeSave
         SwapScenes(filename, true);
     }
 
+    private void LoadChromosomeInternals(string internals_name, string chromosome_name, string type)
+    {
+        _ChromosomePath = ToFolderPath(chromosome_name, internals_name);
+        MenuManager.ItemCreating = internals_name;
+        ChromosomeEntered?.Invoke();
+    }
 
+
+    
     /// <summary>
     /// Method <c>SwapScenes</c> saves and destroys the current scene, before loading the new scene.
     /// <param name="filename">The name of the new scene to load.</param>

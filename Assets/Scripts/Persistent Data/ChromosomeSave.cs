@@ -34,6 +34,11 @@ public class ChromosomeSave : SaveSystem
 
 
 
+    /// <summary>
+    /// Method <c>EnterInternals</c> enters the internals of a struct variable.
+    /// <param name="chromosome">The chromosome this struct belongs to.</param>
+    /// <param name="variable">The struct variable.</param>
+    /// </summary>
     private void EnterInternals(Chromosome chromosome, ChromosomeVariable variable)
     {
         var path = SetupInternalsName(variable);
@@ -53,9 +58,13 @@ public class ChromosomeSave : SaveSystem
 
     
     
+    /// <summary>
+    /// Method <c>SwapScenes</c> saves and destroys the current scene, before loading the new scene.
+    /// <param name="filename">The name of the new scene to load.</param>
+    /// <param name="add_scene">Whether to add this new scene to the stack of scenes.</param>
+    /// </summary>
     private void SwapScenes(string path, bool add_scene)
     {
-        Debug.Log(path);
         if (add_scene)
         {
             _previousScenes.Push(_currentScene);
@@ -105,10 +114,14 @@ public class ChromosomeSave : SaveSystem
         return path;
     }
 
+    /// <summary>
+    /// Method <c>SaveChromosome</c> serializes and saves a given chromosome in a given path.
+    /// <param name="chromosome">The chromosome to save.</param>
+    /// <param name="path">The file path to save it to.</param>
+    /// </summary>
     private void SaveChromosome(Chromosome chromosome, string path)
     {
         var json_serialized = JsonUtility.ToJson(chromosome);
-        Debug.Log(json_serialized);
         File.WriteAllText(path, json_serialized);
     }
 }

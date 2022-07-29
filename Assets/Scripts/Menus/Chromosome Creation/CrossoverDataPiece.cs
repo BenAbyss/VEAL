@@ -1,9 +1,13 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
 
 public class CrossoverDataPiece : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI placeholderName;
+    public static event Action<string, string, string> LoadInternals;
+    public static event Action<string, string, string> NameChanged;
+    public string chromosomeName;
     private string _name;
     
     /// <summary>
@@ -11,8 +15,18 @@ public class CrossoverDataPiece : MonoBehaviour
     /// </summary>
     public void Start()
     {
+        var par_name = ChromosomeCreationManager.ParentChromosome;
+        chromosomeName =  string.IsNullOrEmpty(par_name) ? "MainChromosome" : par_name;
         _name = "Crossover " + ChromosomeCreationManager.CrossoverCount;
         placeholderName.text = _name;
+    }
+    
+    /// <summary>
+    /// Method <c>LoadUpInternals</c> invokes a call to load up the internals this button stores.
+    /// </summary>
+    public void LoadUpInternals()
+    {
+        LoadInternals?.Invoke(_name, chromosomeName, "Crossover");
     }
 
     /// <summary>
@@ -32,6 +46,7 @@ public class CrossoverDataPiece : MonoBehaviour
     /// </summary>
     public void NewName(string new_name)
     {
+        NameChanged?.Invoke("Crossover", _name, new_name);
         _name = new_name;
     }
 }

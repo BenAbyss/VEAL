@@ -40,14 +40,20 @@ public class SaveSystem : MonoBehaviour
     /// <summary>
     /// Method <c>ValidName</c> gets a valid file name from a given name, by adding an appropriate counter suffix.
     /// <param name="filename">The base name of the file.</param>
+    /// <param name="folder">The folder within the subpath that it's stored in.</param>
     /// <returns>The adjusted valid name for the file.</returns>
     /// </summary>
-    protected string ValidName(string filename)
+    protected string ValidName(string filename, string folder="")
     {
         filename = filename.Trim();
-        var files = new List<string>(Directory.GetFiles(SubPath(), @"*.sav"));
+        if (filename.EndsWith(".sav"))
+        {
+            filename = filename.Substring(0, filename.Length - 4);
+        }
+        
+        var files = new List<string>(Directory.GetFiles(Path.Combine(SubPath(), folder), @"*.sav"));
 
-        if (files.Contains(filename))
+        if (files.Contains(filename + ".sav"))
         {
             var suffix_val = 1;
             while (files.Contains(filename + " (" + suffix_val + ")"))
@@ -68,6 +74,11 @@ public class SaveSystem : MonoBehaviour
     /// </summary>
     protected string ToPath(string file)
     {
+        // avoid repeating '.sav' endings
+        if (file.EndsWith(".sav"))
+        {
+            file = file.Substring(0, file.Length - 4);
+        }
         return Path.Combine(SubPath(), file + ".sav");
     }
 
@@ -78,5 +89,30 @@ public class SaveSystem : MonoBehaviour
     protected string SubPath()
     {
         return Path.Combine(Application.persistentDataPath, Path.Combine("SaveFiles", Subdirectory));
+    }
+    
+    /// <summary>
+    /// Method <c>ToFolderPath</c> gets the complete persistent data path of the subdirectory within a given folder.
+    /// <param name="folder">The name of the folder to be stored in.</param>
+    /// <param name="file">The name of the file.</param>
+    /// <returns>The persistent data path of the subdirectory.</returns>
+    /// </summary>
+    protected string ToFolderPath(string folder, string file)
+    {
+        // avoid repeating '.sav' endings
+        if (file.EndsWith(".sav"))
+        {
+            file = file.Substring(0, file.Length - 4);
+        }
+        
+        // create the folder if it isn't already created
+        var folder_path = Path.Combine(Application.persistentDataPath,
+            Path.Combine("SaveFiles", Path.Combine(Subdirectory, folder)));
+        if (!Directory.Exists(folder_path))
+        {
+            Directory.CreateDirectory(folder_path);
+        }
+        
+        return Path.Combine(folder_path, file + ".sav");
     }
 }

@@ -5,11 +5,16 @@ using UnityEngine;
 public class InternalsMenuManager : MenuManager
 {
     public static event Action PreviousScene;
+    public static event Action ReturnToChromosome;
     [SerializeField] private TextMeshProUGUI text;
 
     public void Start()
     {
         ChangeActivity(false);
+        if (ItemCreating != "Nodes")
+        {
+            UpdateText(ItemCreating, true);
+        }
     }
 
     /// <summary>
@@ -50,6 +55,15 @@ public class InternalsMenuManager : MenuManager
     public void Return()
     {
         ChangeActivity(false);
-        PreviousScene?.Invoke();
+        if (ItemCreating != "Nodes")
+        {
+            ItemCreating = "Chromosome";
+            ReturnToChromosome?.Invoke();
+            StartCoroutine(LoadScene("Chromosome Creation"));
+        }
+        else
+        {
+            PreviousScene?.Invoke();
+        }
     }
 }

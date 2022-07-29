@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
@@ -36,6 +37,8 @@ public class ChromosomeCreationManager : MenuManager
     /// </summary>
     public void Start()
     {
+        ItemCreating = "Chromosome";
+        ParentChromosome = "MainChromosome";
         _activePanel = ("Fitness", panels["Fitness"]);
         MutationCount = 1;
         CrossoverCount = 1;
@@ -60,6 +63,7 @@ public class ChromosomeCreationManager : MenuManager
         VariableDataPiece.DeletedVariable += RemoveVariable;
         VariableDataPiece.TypeEntered += EnterVarType;
         ChromosomeSave.LoadChromosome += UpdateForChromosome;
+        SceneSave.ChromosomeEntered += ChangeUnityScenes;
         ChromosomeSave.ChromosomeLeft += s => {SaveChromosome?.Invoke(ExtractChromosome(), s); }; 
         ChromosomeSave.TopChromosomeReached += () => backBtn.SetActive(false);
     }
@@ -74,10 +78,25 @@ public class ChromosomeCreationManager : MenuManager
         VariableDataPiece.DeletedVariable -= RemoveVariable;
         VariableDataPiece.TypeEntered -= EnterVarType;
         ChromosomeSave.LoadChromosome -= UpdateForChromosome;
+        SceneSave.ChromosomeEntered -= ChangeUnityScenes;
     }
 
+    
+    
+    /// <summary>
+    /// Method <c>ChangeUnityScenes</c> changes the scene to a node scene.
+    /// </summary>
+    private void ChangeUnityScenes()
+    {
+        StartCoroutine(LoadScene("NodesScene"));
+    }
+    
 
 
+    /// <summary>
+    /// Method <c>EnterVarType</c> enters a variable struct type.
+    /// <param name="var_id">The variable to enter.</param>
+    /// </summary>
     private void EnterVarType(int var_id)
     {
         backBtn.SetActive(true);
@@ -100,13 +119,36 @@ public class ChromosomeCreationManager : MenuManager
         _activePanel = ("Fitness", panels["Fitness"]);
         VariableDataPiece.VariablesCount = 0;
         FitnessDataPiece.VariablesCount = 0;
+        MutationCount = 0;
+        CrossoverCount = 0;
         _variables.Clear();
         foreach (Transform child in scrollers["Variable"].transform) if (child.name != "AddBtn") Destroy(child.gameObject);
+        foreach (Transform child in scrollers["Crossover"].transform) if (child.name != "AddBtn") Destroy(child.gameObject);
+        foreach (Transform child in scrollers["Mutation"].transform) if (child.name != "AddBtn") Destroy(child.gameObject);
         foreach (Transform child in scrollers["Fitness"].transform) Destroy(child.gameObject);
  
-
+        // enable all scroller in order to add the items to
+        _activePanel = ("Fitness", panels["Fitness"]);
+        panels["Fitness"].SetActive(true);
+        panels["Mutation"].SetActive(true);
+        panels["Crossover"].SetActive(true);
+        
+        // build crossover and mutation buttons
+        foreach (var mutation in chromosome.mutationNames)
+        {
+            var prefab = GetNewMutationPrefab();
+            prefab.GetComponent<MutationDataPiece>().NewName(mutation);
+            prefab.GetComponentInChildren<TMP_InputField>().text = mutation;
+        }
+        foreach (var crossover in chromosome.crossoverNames)
+        {
+            var prefab = GetNewCrossoverPrefab();
+            prefab.GetComponent<CrossoverDataPiece>().NewName(crossover);
+            prefab.GetComponentInChildren<TMP_InputField>().text = crossover;
+        }
+        
+        // build variables
         var count = 1;
-
         if (chromosome.variables.Count == 0)
         {
             AddVarPrefab();
@@ -122,6 +164,10 @@ public class ChromosomeCreationManager : MenuManager
         }
         scrollers["Variable"].GetComponentInParent<ScrollRect>().normalizedPosition = new Vector2(0, 1);
         scrollers["Fitness"].GetComponentInParent<ScrollRect>().normalizedPosition = new Vector2(0, 1);
+        
+        // hide hidden scrollers
+        panels["Mutation"].SetActive(false);
+        panels["Crossover"].SetActive(false);
     }
     
     /// <summary>
@@ -130,10 +176,27 @@ public class ChromosomeCreationManager : MenuManager
     /// </summary>
     private Chromosome ExtractChromosome()
     {
+        // extract variable elements
         var chromosome = new Chromosome {parentChromosome = ParentChromosome};
         var variables = _variables.Keys.Select(ExtractVariable).ToList();
-
         chromosome.variables = variables;
+        
+        // extract crossover and mutation elements
+        foreach (Transform child in scrollers["Mutation"].transform) 
+        {
+            if (child.name != "AddBtn")
+            {
+                chromosome.mutationNames.Add(child.GetComponent<MutationDataPiece>().GetName());
+            }
+        }
+        foreach (Transform child in scrollers["Crossover"].transform) 
+        {
+            if (child.name != "AddBtn")
+            {
+                chromosome.crossoverNames.Add(child.GetComponent<CrossoverDataPiece>().GetName());
+            }
+        }
+
         return chromosome;
     }
 
@@ -192,7 +255,18 @@ public class ChromosomeCreationManager : MenuManager
     }
 
     /// <summary>
-    /// Method <c>AddPrefab</c> extends the scroller size and creates the new prefab for the Mutation panel.
+    /// Method <c>GetNewMutationPrefab</c> extends the scroller size and creates the new prefab for the Mutation panel.
+    /// This exists for the purpose of button calls.
+    /// <returns>The created prefab</returns>
+    /// </summary>
+    private GameObject GetNewMutationPrefab()
+    {
+        MutationCount++;
+        return AddPrefab(scrollers["Mutation"], dataPrefabs["Mutation"]);
+    }
+    
+    /// <summary>
+    /// Method <c>AddMutationPrefab</c> extends the scroller size and creates the new prefab for the Mutation panel.
     /// This exists for the purpose of button calls.
     /// </summary>
     public void AddMutationPrefab()
@@ -200,15 +274,27 @@ public class ChromosomeCreationManager : MenuManager
         MutationCount++;
         AddPrefab(scrollers["Mutation"], dataPrefabs["Mutation"]);
     }
+    
+    /// <summary>
+    /// Method <c>GetNewCrossoverPrefab</c> extends the scroller size and creates the new prefab for the Crossover panel.
+    /// This exists for the purpose of button calls.
+    /// <returns>The created prefab</returns>
+    /// </summary>
+    private GameObject GetNewCrossoverPrefab()
+    {
+        CrossoverCount++;
+        return AddPrefab(scrollers["Crossover"], dataPrefabs["Crossover"]); 
+    }
 
     /// <summary>
-    /// Method <c>AddPrefab</c> extends the scroller size and creates the new prefab for the Crossover panel.
+    /// Method <c>AddCrossoverPrefab</c> extends the scroller size and creates the new prefab for the Crossover panel.
     /// This exists for the purpose of button calls.
+    /// <returns>The created prefab</returns>
     /// </summary>
     public void AddCrossoverPrefab()
     {
         CrossoverCount++;
-        AddPrefab(scrollers["Crossover"], dataPrefabs["Crossover"]);
+        AddPrefab(scrollers["Crossover"], dataPrefabs["Crossover"]); 
     }
 
     private void RemoveVariable(int var_id)
@@ -227,8 +313,9 @@ public class ChromosomeCreationManager : MenuManager
     /// Method <c>AddPrefab</c> extends the scroller size and creates the new prefab.
     /// <param name="scroller">The scroller to add the prefab to.</param>
     /// <param name="prefab">The prefab to create.</param>
+    /// <returns>The created prefab</returns>
     /// </summary>
-    private void AddPrefab(GameObject scroller, GameObject prefab)
+    private GameObject AddPrefab(GameObject scroller, GameObject prefab)
     {
         var grid = scroller.GetComponent<HorizontalOrVerticalLayoutGroup>();
         var child_count = scroller.transform.childCount;
@@ -236,7 +323,7 @@ public class ChromosomeCreationManager : MenuManager
         // this doesn't require a +1 thanks to the add button
         AdjustScroller(scroller, prefab_name, grid, scroller.GetComponent<RectTransform>(), child_count); 
         // instantiate the prefab
-        CreatePrefab(prefab, prefab_name, grid, child_count);
+        return CreatePrefab(prefab, prefab_name, grid, child_count);
     }
     
     /// <summary>
@@ -245,8 +332,9 @@ public class ChromosomeCreationManager : MenuManager
     /// <param name="prefab_name">The name of the prefab - exclusively the evolutionary action word.</param>
     /// <param name="grid">The grid to create it to.</param>
     /// <param name="child_count">The amount of children the grid have.</param>
+    /// <returns>The created prefab</returns>
     /// </summary>
-    private void CreatePrefab(GameObject prefab, string prefab_name, 
+    private GameObject CreatePrefab(GameObject prefab, string prefab_name, 
         HorizontalOrVerticalLayoutGroup grid, int child_count)
     {
         var built_prefab = Instantiate(prefab, grid.transform, false);
@@ -256,21 +344,28 @@ public class ChromosomeCreationManager : MenuManager
             addBtns[prefab_name].transform.SetSiblingIndex(child_count);
         }
 
-        if (prefab_name == "Variable")
+        switch (prefab_name)
         {
-            var var_data_piece = built_prefab.GetComponent<VariableDataPiece>();
-            var_data_piece.SetManager(this);
-            var_data_piece.Start();
-            _variableObjs[var_data_piece.GetId()] = var_data_piece;
-            _limitsManager.Invalids[var_data_piece.GetId()] = new List<string>();
-            _limitsManager.Enumerators[var_data_piece.GetId()] = new List<(string, float)>();
+            case "Variable":
+            {
+                var var_data_piece = built_prefab.GetComponent<VariableDataPiece>();
+                var_data_piece.SetManager(this);
+                var_data_piece.Start();
+                _variableObjs[var_data_piece.GetId()] = var_data_piece;
+                _limitsManager.Invalids[var_data_piece.GetId()] = new List<string>();
+                _limitsManager.Enumerators[var_data_piece.GetId()] = new List<(string, float)>();
+                break;
+            }
+            case "Fitness":
+            {
+                var fitness_data_piece = built_prefab.GetComponent<FitnessDataPiece>();
+                fitness_data_piece.Start();
+                _fitnessObjs[fitness_data_piece.GetId()] = fitness_data_piece;
+                break;
+            }
         }
-        else if (prefab_name == "Fitness")
-        {
-            var fitness_data_piece = built_prefab.GetComponent<FitnessDataPiece>();
-            fitness_data_piece.Start();
-            _fitnessObjs[fitness_data_piece.GetId()] = fitness_data_piece;
-        }
+
+        return built_prefab;
     }
     
     /// <summary>

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] private float transitionTime;
+    public static string ItemCreating = "Nodes";
     protected bool IsActive;
     protected GameObject MenuObject;
     protected CanvasGroup Canvas;
@@ -41,7 +43,7 @@ public class MenuManager : MonoBehaviour
     /// Method <c>LoadScene</c> asynchronously loads a new scene.
     /// <param name="scene">The name of the scene to load.</param>
     /// </summary>
-    public IEnumerator LoadScene(string scene)
+    protected IEnumerator LoadScene(string scene)
     {
         yield return new WaitForSeconds(transitionTime);
         AsyncOperation async_operation = SceneManager.LoadSceneAsync(scene);
