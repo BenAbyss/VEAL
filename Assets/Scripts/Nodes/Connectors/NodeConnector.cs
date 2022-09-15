@@ -217,6 +217,17 @@ public class NodeConnector  : NodeConnectedObject
     }
     
     /// <summary>
+    /// Method <c>GetNodesType</c> returns the type of this connectors' node.
+    /// <returns>This connectors' node type.</returns>
+    /// </summary>
+    public string GetNodesType()
+    {
+        return connectorGroup.GetConnectedNodeFunc().GetNodeType();
+    }
+    
+    
+    
+    /// <summary>
     /// Method <c>SetupLineRenderer</c> sets up the Line Renderer with the appropriate settings.
     /// </summary>
     private void SetupLineRenderer()

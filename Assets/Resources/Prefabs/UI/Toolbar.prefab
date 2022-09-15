@@ -680,7 +680,18 @@ MonoBehaviour:
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2224651913282592839}
+        m_MethodName: NavigatePressed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!1 &7113564128294256335
 GameObject:
@@ -815,7 +826,18 @@ MonoBehaviour:
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2224651913282592839}
+        m_MethodName: SettingsPressed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!1 &7113564128345740729
 GameObject:
@@ -1282,6 +1304,7 @@ GameObject:
   - component: {fileID: 7113564128554336535}
   - component: {fileID: 7113564128554336534}
   - component: {fileID: 7113564128554336532}
+  - component: {fileID: 2224651913282592839}
   m_Layer: 5
   m_Name: Toolbar
   m_TagString: Untagged
@@ -1373,6 +1396,21 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &2224651913282592839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7113564128554336528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08cbcd7d2b354fb587a9d9b8ab5b8ec4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fileDropdown: {fileID: 7113564129419164366}
+  navigateDropdown: {fileID: 7113564128185785846}
+  settingsDropdown: {fileID: 7113564128294256333}
 --- !u!1 &7113564128576701681
 GameObject:
   m_ObjectHideFlags: 0
@@ -3038,7 +3076,18 @@ MonoBehaviour:
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2224651913282592839}
+        m_MethodName: FilePressed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!1 &7113564129426797352
 GameObject:

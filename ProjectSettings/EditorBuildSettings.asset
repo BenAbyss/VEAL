@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Chromosome Creation.unity
+    guid: da2997b07e1349a4d9b2f5c68f4b768a
+  - enabled: 1
+    path: Assets/Scenes/NodesScene.unity
+    guid: 0f5b4ceeed3853549884955765bd6c04
   m_configObjects: {}

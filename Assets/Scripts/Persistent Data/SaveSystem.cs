@@ -5,6 +5,7 @@ using UnityEngine;
 public class SaveSystem : MonoBehaviour
 {
     protected virtual string Subdirectory => "General";
+    protected virtual string FileType => ".sav";
 
     public void Start()
     {
@@ -41,19 +42,22 @@ public class SaveSystem : MonoBehaviour
     /// Method <c>ValidName</c> gets a valid file name from a given name, by adding an appropriate counter suffix.
     /// <param name="filename">The base name of the file.</param>
     /// <param name="folder">The folder within the subpath that it's stored in.</param>
+    /// <param name="file_type">The type of files to compare it to.</param>
     /// <returns>The adjusted valid name for the file.</returns>
     /// </summary>
-    protected string ValidName(string filename, string folder="")
+    protected string ValidName(string filename, string folder="", string file_type = null)
     {
+        if (file_type == null) file_type = FileType;
         filename = filename.Trim();
-        if (filename.EndsWith(".sav"))
+        if (filename.EndsWith(file_type))
         {
-            filename = filename.Substring(0, filename.Length - 4);
+            filename = filename.Substring(0, filename.Length - file_type.Length);
         }
         
-        var files = new List<string>(Directory.GetFiles(Path.Combine(SubPath(), folder), @"*.sav"));
+        var files = new List<string>(Directory.GetFiles(Path.Combine(SubPath(), folder), 
+            @"*"+file_type));
 
-        if (files.Contains(filename + ".sav"))
+        if (files.Contains(filename + file_type))
         {
             var suffix_val = 1;
             while (files.Contains(filename + " (" + suffix_val + ")"))
@@ -75,11 +79,11 @@ public class SaveSystem : MonoBehaviour
     protected string ToPath(string file)
     {
         // avoid repeating '.sav' endings
-        if (file.EndsWith(".sav"))
+        if (file.EndsWith(FileType))
         {
             file = file.Substring(0, file.Length - 4);
         }
-        return Path.Combine(SubPath(), file + ".sav");
+        return Path.Combine(SubPath(), file + FileType);
     }
 
     /// <summary>
@@ -97,10 +101,10 @@ public class SaveSystem : MonoBehaviour
     /// <param name="file">The name of the file.</param>
     /// <returns>The persistent data path of the subdirectory.</returns>
     /// </summary>
-    protected string ToFolderPath(string folder, string file)
+    public string ToFolderPath(string folder, string file)
     {
-        // avoid repeating '.sav' endings
-        if (file.EndsWith(".sav"))
+        // avoid repeating FileType endings
+        if (file.EndsWith(FileType))
         {
             file = file.Substring(0, file.Length - 4);
         }
@@ -112,7 +116,7 @@ public class SaveSystem : MonoBehaviour
         {
             Directory.CreateDirectory(folder_path);
         }
-        
-        return Path.Combine(folder_path, file + ".sav");
+
+        return file != "" ? Path.Combine(folder_path, file + FileType) : folder_path;
     }
 }

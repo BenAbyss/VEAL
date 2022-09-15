@@ -7,7 +7,7 @@ public class ChromosomeSave : SaveSystem
 {
     public static event Action<Chromosome> LoadChromosome;
     public static event Action TopChromosomeReached;
-    public static event Action<string> ChromosomeLeft;
+    public static event Action<string, string> ChromosomeLeft;
     protected override string Subdirectory => "Chromosomes";
     private const string DefaultPath = "MainChromosome";
     
@@ -91,7 +91,7 @@ public class ChromosomeSave : SaveSystem
         {
             TopChromosomeReached?.Invoke();
         }
-        ChromosomeLeft?.Invoke(_currentScene);
+        ChromosomeLeft?.Invoke(_currentScene, null);
         SwapScenes(_previousScenes.Pop(), false);
     }
     
@@ -119,7 +119,7 @@ public class ChromosomeSave : SaveSystem
     /// <param name="chromosome">The chromosome to save.</param>
     /// <param name="path">The file path to save it to.</param>
     /// </summary>
-    private void SaveChromosome(Chromosome chromosome, string path)
+    private void SaveChromosome (Chromosome chromosome, string path)
     {
         var json_serialized = JsonUtility.ToJson(chromosome);
         File.WriteAllText(path, json_serialized);

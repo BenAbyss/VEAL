@@ -35,7 +35,7 @@ public class SceneSave : NodeSave
         InternalsMenuManager.PreviousScene += PreviousScene;
         MutationDataPiece.LoadInternals += LoadChromosomeInternals;
         CrossoverDataPiece.LoadInternals += LoadChromosomeInternals;
-        InternalsMenuManager.ReturnToChromosome += () => SaveNodes(_ChromosomePath);
+        InternalsMenuManager.ReturnToChromosome += () => Save(_ChromosomePath);
     }
 
     /// <summary>
@@ -77,7 +77,7 @@ public class SceneSave : NodeSave
     /// </summary>
     private void SwapScenes(string filename, bool add_scene)
     {
-        SaveNodes(_currentScene);
+        Save(_currentScene);
         // destroy all currently active nodes
         foreach (var node in FindObjectsOfType<BasicNode>())
         {
@@ -111,9 +111,11 @@ public class SceneSave : NodeSave
     /// <summary>
     /// Method <c>SaveNodes</c> serializes and saves all currently active nodes.
     /// <param name="filename">The name of the file to store the serialization within.</param>
+    /// <param name="folder">The folder to store it in, if appropriate.</param>
     /// </summary>
-    private void SaveNodes(string filename)
+    public void Save(string filename, string folder=null)
     {
+        if (folder != null) filename = Path.Combine(folder, filename);
         var nodes = FindObjectsOfType<BasicNode>();
         var json_serialized = nodes.Select(node => SerializeNode(node.gameObject)).ToList();
 

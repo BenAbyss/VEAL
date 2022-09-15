@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -64,7 +65,7 @@ public class ChromosomeCreationManager : MenuManager
         VariableDataPiece.TypeEntered += EnterVarType;
         ChromosomeSave.LoadChromosome += UpdateForChromosome;
         SceneSave.ChromosomeEntered += ChangeUnityScenes;
-        ChromosomeSave.ChromosomeLeft += s => {SaveChromosome?.Invoke(ExtractChromosome(), s); }; 
+        ChromosomeSave.ChromosomeLeft += Save; 
         ChromosomeSave.TopChromosomeReached += () => backBtn.SetActive(false);
     }
 
@@ -79,9 +80,30 @@ public class ChromosomeCreationManager : MenuManager
         VariableDataPiece.TypeEntered -= EnterVarType;
         ChromosomeSave.LoadChromosome -= UpdateForChromosome;
         SceneSave.ChromosomeEntered -= ChangeUnityScenes;
+        ChromosomeSave.ChromosomeLeft -= Save; 
     }
 
-    
+
+
+    /// <summary>
+    /// Method <c>Save</c> serializes and saves the chromosome.
+    /// <param name="filename">The name of the file to store the serialization within.</param>
+    /// <param name="folder">The folder to store it in, if appropriate.</param>
+    /// </summary>
+    public void Save(string filename, string folder=null)
+    {
+        if (folder != null)
+        {
+            var folder_path = Path.Combine(Application.persistentDataPath,
+                Path.Combine("SaveFiles", Path.Combine("Chromosomes", folder)));
+            if (!Directory.Exists(folder_path))
+            {
+                Directory.CreateDirectory(folder_path);
+            }
+            filename = Path.Combine(folder_path, filename);
+        }
+        SaveChromosome?.Invoke(ExtractChromosome(), filename);
+    }
     
     /// <summary>
     /// Method <c>ChangeUnityScenes</c> changes the scene to a node scene.
