@@ -10,7 +10,7 @@ public class ExportManager : SaveSystem
 {
     protected override string Subdirectory => "Exported Code";
     protected override string FileType => ".cs";
-    private const string TextCulture = "en-UK";
+    private const string TextCulture = "en-US";
     private static readonly TextInfo TextInfo = new CultureInfo(TextCulture, false).TextInfo;
 
     // this stores the node and a list of output indexes
@@ -69,22 +69,7 @@ public class ExportManager : SaveSystem
     public void CreateMainFile()
     {
         // go to right screen
-        var start_nodes = GetNodes();
-        var and_gate_var = "private Dictionary<string, int> _andGates = new Dictionary<string, int> {";
-        
-        // create a dictionary of counters for each AND gate, to register if both paths call them
-        foreach (var (node, path) in _nodes)
-        {
-            if (node is ANDGateNode)
-            {
-                and_gate_var += "{" + node.name + ", 0}";
-            }
-        }
-        
         _stream.Write("public class Main\n{\n");
-        // set up the AND gate implementations
-        _stream.Write(Indent(and_gate_var + "};\n \n", 1));
-        
         // call GetNodes
         // create class start, and class variable counters for all AND gates
         // call ExtractPath on each GetNodes return value
@@ -126,7 +111,9 @@ public class ExportManager : SaveSystem
     {
         if (_builtNodes.Contains(node_index)) return;
         
-        ExtractNode(_nodes[node_index].Item1, 1);
+        var outputs = 
+            _nodes[node_index].Item2.Select(output => NodeToMethodName(_nodes[output].Item1.name)).ToList();
+        ExtractNode(_nodes[node_index].Item1, outputs, 1);
         _builtNodes.Add(node_index);
         foreach (var next_index in _nodes[node_index].Item2)
         {
@@ -136,31 +123,42 @@ public class ExportManager : SaveSystem
     
     
     
-    private void ExtractNode(BasicNode node, int indent_amnt)
+    /// <summary>
+    /// Method <c>ExtractNode</c> extracts a node into string code, and adds it to the stream.
+    /// <param name="node">The node to extract.</param>
+    /// <param name="outputs">A list of the methods that are possible outputs of the node.</param>
+    /// <param name="indent_amnt">How many times to indent the code.</param>
+    /// </summary>
+    private void ExtractNode(BasicNode node, IEnumerable<string> outputs, int indent_amnt)
     {
-        // the return value states whether to continue the path
-        var node_code = "private bool " + 
-                        TextInfo.ToTitleCase(node.name.ToLower()).Replace(" ", "") + "()\n{\n";
+        // the node name is used for the method name for seamless pathing without repeated implementations
+        // the return value states what paths to add to the queue, or an empty list for none
+        var node_code = "private List<string> " + NodeToMethodName(node.name) + "()\n{\n";
         indent_amnt++;
 
         var produced_code = "";
         switch (node.GetNodeType())
         {
-            case "Interactive Node" : break;
-            case "Decision Node" : break;
-            case "Loop Node" : break;
+            case "Interactive Node" : 
+                // create internal ExportQueue
+                break;
+            case "Decision Node" :
+                produced_code = "return NodeImplementation.DecisionImpl(" +
+                                $"{((DecisionNode) node).GetPathsTaken()}, {outputs});";
+                break;
+            case "Loop Node" : 
+                // figure out what the loop encapsulates - work backwards if poss
+                break;
             case "Probability Node" :
                 produced_code = "return new System.Random().Next(1, 100) <= " +
-                                $"{node.name.Replace("%", "")};";
+                                $"{node.name.Replace("%", "")} ? {outputs} : new List<string>();";
                 break;
             case "AND Gate Node" :
-                produced_code = $"return NodeImplementation.ANDGateImpl({node.name});";
+                produced_code = $"return NodeImplementation.ANDGateImpl({node.name}, {outputs});";
                 break;
         }
-        node_code += Indent(produced_code, 1) + "\n}\n";
         
-        // have it be a function with the node name as the method name
-        // this then allows for seamless pathing between them and avoidance of repeated implementations
+        node_code += Indent(produced_code, 1) + "\n}\n";
         _stream.Write(Indent(node_code + "\n", indent_amnt));
     }
 
@@ -175,6 +173,16 @@ public class ExportManager : SaveSystem
         var indent = "";
         for (var i = 0; i < indent_amnt; i++) indent += "   ";
         return str.Replace("\n", "\n" + indent);
+    }
+
+    /// <summary>
+    /// Method <c>NodeToMethodName</c> transforms a nodes' name into a method name.
+    /// <param name="node_name">The node name to translate.</param>
+    /// <returns>The resultant method name.</returns>
+    /// </summary>
+    private string NodeToMethodName(string node_name)
+    {
+        return TextInfo.ToTitleCase(node_name.ToLower()).Replace(" ", "");
     }
     
     /// <summary>
