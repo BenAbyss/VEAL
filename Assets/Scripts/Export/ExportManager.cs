@@ -113,7 +113,7 @@ public class ExportManager : SaveSystem
         
         var outputs = 
             _nodes[node_index].Item2.Select(output => NodeToMethodName(_nodes[output].Item1.name)).ToList();
-        ExtractNode(_nodes[node_index].Item1, outputs, 1);
+        ExtractNode(node_index, outputs, 1);
         _builtNodes.Add(node_index);
         foreach (var next_index in _nodes[node_index].Item2)
         {
@@ -125,15 +125,17 @@ public class ExportManager : SaveSystem
     
     /// <summary>
     /// Method <c>ExtractNode</c> extracts a node into string code, and adds it to the stream.
-    /// <param name="node">The node to extract.</param>
+    /// <param name="node_index">The index of the node to extract.</param>
     /// <param name="outputs">A list of the methods that are possible outputs of the node.</param>
     /// <param name="indent_amnt">How many times to indent the code.</param>
     /// </summary>
-    private void ExtractNode(BasicNode node, IEnumerable<string> outputs, int indent_amnt)
+    private void ExtractNode(int node_index, List<string> outputs, int indent_amnt)
     {
         // the node name is used for the method name for seamless pathing without repeated implementations
         // the return value states what paths to add to the queue, or an empty list for none
+        var node = _nodes[node_index].Item1;
         var node_code = "private List<string> " + NodeToMethodName(node.name) + "()\n{\n";
+        var outputs_code = "new List<string>{" + string.Join(", ", outputs) + "};";
         indent_amnt++;
 
         var produced_code = "";
@@ -144,22 +146,50 @@ public class ExportManager : SaveSystem
                 break;
             case "Decision Node" :
                 produced_code = "return NodeImplementation.DecisionImpl(" +
-                                $"{((DecisionNode) node).GetPathsTaken()}, {outputs});";
+                                $"{((DecisionNode) node).GetPathsTaken()}, {outputs_code});";
                 break;
-            case "Loop Node" : 
-                // figure out what the loop encapsulates - work backwards if poss
+            case "Loop Node" :
+                var loop = FindLoop(node.name, node_index, new List<string>());
+                var loop_code = "new List<string>{" + string.Join(", ", loop) + "};";
+                produced_code = $"return NodeImplementation.LoopImpl(" +
+                                $"{((LoopNode) node).LoopCount}, {loop_code}, {outputs_code});";
                 break;
             case "Probability Node" :
                 produced_code = "return new System.Random().Next(1, 100) <= " +
-                                $"{node.name.Replace("%", "")} ? {outputs} : new List<string>();";
+                                $"{node.name.Replace("%", "")} ? {outputs_code} : new List<string>();";
                 break;
             case "AND Gate Node" :
-                produced_code = $"return NodeImplementation.ANDGateImpl({node.name}, {outputs});";
+                produced_code = $"return NodeImplementation.ANDGateImpl({node.name}, {outputs_code});";
                 break;
         }
         
         node_code += Indent(produced_code, 1) + "\n}\n";
         _stream.Write(Indent(node_code + "\n", indent_amnt));
+    }
+
+    /// <summary>
+    /// Method <c>FindLoop</c> finds the entire path encapsulated within a loop nodes' loop through recursion.
+    /// <param name="target">The name of the loop node, to know when it's end is found.</param>
+    /// <param name="start_index">The index of the node to start the path checks at.</param>
+    /// <param name="path">The currently built up path.</param>
+    /// <returns>An ordered list of the path.</returns>
+    /// </summary>
+    private List<string> FindLoop(string target, int start_index, List<string> path)
+    {
+        path.Add(NodeToMethodName(_nodes[start_index].Item1.name));
+        foreach (var output in _nodes[start_index].Item2)
+        {
+            var result = FindLoop(target, output, path);
+            // if there's the loop node at any point in the path, return the path
+            if (_nodes[output].Item1.name == target || result != null)
+            {
+                path.RemoveAt(path.Count - 1);
+                return path;
+            }
+        }
+
+        // if the loop isn't in this path, return null. This happens for paths called post-loop
+        return null;
     }
 
     /// <summary>

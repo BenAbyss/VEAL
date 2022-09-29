@@ -81,6 +81,7 @@
      <Compile Include="Assets\Scripts\Menus\Node Specs Panels\DecisionNodePathNameSubsection.cs" />
      <Compile Include="Assets\Scripts\Menus\Node Specs Panels\DecisionNodeSpecsPanelManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Node Specs Panels\InteractiveNodeSpecsPanelManager.cs" />
+     <Compile Include="Assets\Scripts\Menus\Node Specs Panels\LoopNodeSpecsPanelManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Node Specs Panels\NodeSpecsPanelManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Node Util Menus\InternalsMenuManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Node Util Menus\NodeCreatorMenuManager.cs" />
