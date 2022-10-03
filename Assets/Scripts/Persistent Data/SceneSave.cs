@@ -13,7 +13,7 @@ public class SceneSave : NodeSave
     public static event Action ChromosomeEntered;
     private static string _ChromosomePath;
     
-    private string _currentScene = "MainScene"; // replaced by save file name if it's a saved project
+    private string _currentScene = "NodesScene"; // replaced by save file name if it's a saved project
     private Stack<string> _previousScenes = new Stack<string>();
 
     public void Awake()
@@ -32,9 +32,11 @@ public class SceneSave : NodeSave
     {
         base.OnEnable();
         InteractiveNodeSpecsPanelManager.LoadInternals += LoadInternals;
+        ExportManager.LoadNodesScene += LoadNodesScene;
         InternalsMenuManager.PreviousScene += PreviousScene;
         MutationDataPiece.LoadInternals += LoadChromosomeInternals;
         CrossoverDataPiece.LoadInternals += LoadChromosomeInternals;
+        ExportManager.LoadInternals += LoadInternals;
         InternalsMenuManager.ReturnToChromosome += () => Save(_ChromosomePath);
     }
 
@@ -45,12 +47,22 @@ public class SceneSave : NodeSave
     {
         base.OnDisable();
         InteractiveNodeSpecsPanelManager.LoadInternals -= LoadInternals;
+        ExportManager.LoadNodesScene -= LoadNodesScene;
         InternalsMenuManager.PreviousScene -= PreviousScene;
         MutationDataPiece.LoadInternals -= LoadChromosomeInternals;
         CrossoverDataPiece.LoadInternals -= LoadChromosomeInternals;
+        ExportManager.LoadInternals -= LoadInternals;
     }
 
     
+    
+    /// <summary>
+    /// Method <c>LoadInternals</c> saves and destroys the current scene, before loading the main nodes scene.
+    /// </summary>
+    private void LoadNodesScene()
+    {
+        SwapScenes("NodesScene", true);
+    }
     
     /// <summary>
     /// Method <c>LoadInternals</c> saves and destroys the current scene, before loading the new scene.

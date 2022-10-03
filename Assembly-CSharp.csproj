@@ -64,7 +64,7 @@
      <Compile Include="Assets\Scripts\Chromosomes\FitnessType.cs" />
      <Compile Include="Assets\Scripts\Chromosomes\VarType.cs" />
      <Compile Include="Assets\Scripts\Export\ExportManager.cs" />
-     <Compile Include="Assets\Scripts\Export\ExportQueue.cs" />
+     <Compile Include="Assets\Scripts\Export\ExportStack.cs" />
      <Compile Include="Assets\Scripts\Export\NodeImplementation.cs" />
      <Compile Include="Assets\Scripts\InputManager.cs" />
      <Compile Include="Assets\Scripts\Menus\Chromosome Creation\ChromosomeCreationManager.cs" />
